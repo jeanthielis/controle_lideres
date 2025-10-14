@@ -1,0 +1,2109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão de Liderança</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    
+    <style>
+        /* --- VARIÁVEIS E ESTILOS GLOBAIS --- */
+        :root {
+            /* Paleta de cinzas - Material Design */
+            --gray-50: #fafafa;
+            --gray-100: #f5f5f5;
+            --gray-200: #eeeeee;
+            --gray-300: #e0e0e0;
+            --gray-400: #bdbdbd;
+            --gray-500: #9e9e9e;
+            --gray-600: #757575;
+            --gray-700: #616161;
+            --gray-800: #424242;
+            --gray-900: #212121;
+            
+            /* Cores de destaque */
+            --primary-color: #2196f3;
+            --primary-light: #64b5f6;
+            --primary-dark: #1976d2;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --info-color: #03a9f4;
+            
+            /* Sombras - Material Design */
+            --shadow-1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+            --shadow-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+            --shadow-4: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+            
+            /* Bordas */
+            --border-radius-sm: 4px;
+            --border-radius: 8px;
+            --border-radius-lg: 12px;
+            
+            /* Transições */
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--gray-100);
+            color: var(--gray-800);
+            line-height: 1.6;
+            font-weight: 400;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* --- LAYOUT PRINCIPAL --- */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: var(--gray-900);
+            color: white;
+            padding: 16px 24px;
+            box-shadow: var(--shadow-2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--gray-400);
+            margin-top: 4px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* --- CARD PRINCIPAL --- */
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-1);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-2);
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--gray-200);
+            background-color: var(--gray-50);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        /* --- ABAS (TABS) --- */
+        .tab-container {
+            margin-bottom: 24px;
+        }
+
+        .tab-navigation {
+            display: flex;
+            background-color: white;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            overflow: hidden;
+            box-shadow: var(--shadow-1);
+        }
+
+        .tab-button {
+            flex: 1;
+            background-color: transparent;
+            border: none;
+            padding: 16px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-600);
+            transition: var(--transition);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 56px;
+        }
+
+        .tab-button:hover {
+            background-color: var(--gray-100);
+            color: var(--gray-800);
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            background-color: white;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+            background-color: white;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            box-shadow: var(--shadow-1);
+            overflow: hidden;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* --- FORMULÁRIOS E CONTROLES --- */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius-sm);
+            font-size: 16px;
+            transition: var(--transition);
+            background-color: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+        }
+
+        .form-control.error {
+            border-color: var(--danger-color);
+            box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.2);
+        }
+
+        .error-message {
+            color: var(--danger-color);
+            font-size: 14px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .hint {
+            font-size: 14px;
+            color: var(--gray-500);
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        /* --- BOTÕES --- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-height: 44px;
+        }
+
+        .btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-dark);
+            box-shadow: var(--shadow-2);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background-color: #388e3c;
+            box-shadow: var(--shadow-2);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background-color: #d32f2f;
+            box-shadow: var(--shadow-2);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-400);
+        }
+
+        .btn-outline:hover:not(:disabled) {
+            background-color: var(--gray-100);
+            border-color: var(--gray-600);
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+        }
+
+        /* --- INDICADORES E GRUPOS --- */
+        .indicador-group {
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: var(--gray-50);
+        }
+
+        .indicador-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--gray-800);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        /* --- RESULTADO E PONTUAÇÃO --- */
+        .score-display {
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            padding: 30px 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-2);
+        }
+
+        #pontuacaoFinal {
+            font-size: 72px;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .score-label {
+            font-size: 18px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .feedback-area {
+            background-color: var(--gray-50);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .feedback-item {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .feedback-item:last-child {
+            border-bottom: none;
+        }
+
+        .perda {
+            color: var(--danger-color);
+            font-weight: 500;
+        }
+
+        .ganho {
+            color: var(--success-color);
+            font-weight: 500;
+        }
+
+        /* --- TABELAS --- */
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-1);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+
+        .table th {
+            background-color: var(--gray-100);
+            color: var(--gray-700);
+            font-weight: 500;
+            text-align: left;
+            padding: 16px;
+            border-bottom: 1px solid var(--gray-300);
+        }
+
+        .table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .table tbody tr:hover {
+            background-color: var(--gray-50);
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* --- CONFIGURAÇÕES --- */
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .config-item:last-child {
+            border-bottom: none;
+        }
+
+        .config-label {
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .config-input {
+            width: 80px;
+            text-align: center;
+            padding: 8px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius-sm);
+        }
+
+        .config-section {
+            margin-bottom: 32px;
+        }
+
+        .config-section-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--gray-800);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--gray-300);
+        }
+
+        /* --- CARDS DE COMPARATIVO --- */
+        .cards-comparativo {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card-lider {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow-1);
+            transition: var(--transition);
+            border-top: 4px solid var(--primary-color);
+        }
+
+        .card-lider:hover {
+            box-shadow: var(--shadow-2);
+            transform: translateY(-2px);
+        }
+
+        .card-lider .nome {
+            font-weight: 500;
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: var(--gray-800);
+        }
+
+        .card-lider .pontuacao {
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            margin: 12px 0;
+        }
+
+        .card-lider .estatisticas {
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+
+        .card-lider .destaque {
+            background: var(--success-color);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            margin-top: 12px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* --- GRÁFICOS --- */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .chart-container-comparativo {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        /* --- FILTROS --- */
+        .filtros-relatorio {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .filtro-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filtro-group label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--gray-700);
+        }
+
+        /* --- MODAL --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 24px;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-4);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            color: var(--gray-800);
+        }
+
+        .modal-message {
+            margin-bottom: 24px;
+            color: var(--gray-700);
+            line-height: 1.5;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* --- LISTAS --- */
+        .list {
+            list-style-type: none;
+        }
+
+        .list-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-item:hover {
+            background-color: var(--gray-50);
+        }
+
+        /* --- OCORRÊNCIAS --- */
+        .ocorrencia-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--gray-200);
+            background-color: white;
+        }
+
+        .ocorrencia-item:last-child {
+            border-bottom: none;
+        }
+
+        .ocorrencia-info {
+            flex: 1;
+        }
+
+        .ocorrencia-data {
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .ocorrencia-detalhes {
+            font-size: 14px;
+            color: var(--gray-600);
+            margin-top: 4px;
+        }
+
+        .ocorrencia-acoes {
+            display: flex;
+            gap: 8px;
+        }
+
+        .ocorrencia-form {
+            background-color: var(--gray-50);
+            padding: 16px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* --- ACESSIBILIDADE --- */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: var(--primary-color);
+            color: white;
+            padding: 8px;
+            z-index: 100;
+            text-decoration: none;
+            border-radius: 0 0 var(--border-radius-sm) var(--border-radius-sm);
+            font-weight: 500;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* --- LOADING --- */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- RESPONSIVIDADE --- */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 16px;
+            }
+            
+            .tab-button {
+                min-width: auto;
+                font-size: 12px;
+                padding: 12px 8px;
+            }
+            
+            #pontuacaoFinal {
+                font-size: 48px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .config-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .config-input {
+                width: 100%;
+            }
+
+            .filtros-relatorio {
+                grid-template-columns: 1fr;
+            }
+
+            .cards-comparativo {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card-body {
+                padding: 16px;
+            }
+            
+            .tab-button {
+                font-size: 11px;
+                padding: 10px 6px;
+            }
+            
+            .logo-text {
+                font-size: 18px;
+            }
+            
+            .score-display {
+                padding: 20px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+    
+    <div class="app-container">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-chart-line logo-icon"></i>
+                    <div>
+                        <div class="logo-text">Sistema de Gestão de Liderança</div>
+                        <div class="subtitle">Avaliação, acompanhamento e registro de ocorrências</div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="abrirModalCadastroLider()">
+                    <i class="fas fa-user-plus"></i>
+                    Novo Líder
+                </button>
+            </div>
+        </header>
+        
+        <main id="main-content" class="main-content">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="card-title">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Painel de Avaliação
+                    </h1>
+                </div>
+                
+                <div class="card-body">
+                    <form id="formAvaliacao">
+                        <div class="tab-container">
+                            <div class="tab-navigation" role="tablist" aria-label="Navegação entre abas do sistema">
+                                <button type="button" class="tab-button active" role="tab" aria-selected="true" aria-controls="ocorrencias" onclick="openTab(event, 'ocorrencias')">
+                                    <i class="fas fa-clipboard-list"></i>
+                                    Ocorrências
+                                </button>
+                                <button type="button" class="tab-button" role="tab" aria-selected="false" aria-controls="resultado" onclick="openTab(event, 'resultado')">
+                                    <i class="fas fa-chart-line"></i>
+                                    Resultado
+                                </button>
+                                <button type="button" class="tab-button" role="tab" aria-selected="false" aria-controls="historico" onclick="openTab(event, 'historico')">
+                                    <i class="fas fa-history"></i>
+                                    Histórico
+                                </button>
+                                <button type="button" class="tab-button" role="tab" aria-selected="false" aria-controls="relatorios" onclick="openTab(event, 'relatorios')">
+                                    <i class="fas fa-chart-bar"></i>
+                                    Relatórios
+                                </button>
+                            </div>
+
+                            <div id="ocorrencias" class="tab-content active" role="tabpanel" aria-labelledby="ocorrencias-tab">
+                                <h2 class="indicador-title">
+                                    <i class="fas fa-clipboard-list"></i>
+                                    Registro de Ocorrências Diárias
+                                </h2>
+                                
+                                <div class="ocorrencia-form">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="selectLiderOcorrencia" class="form-label">Líder</label>
+                                            <select id="selectLiderOcorrencia" class="form-control" required>
+                                                <option value="">-- Selecione o Líder --</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="dataOcorrencia" class="form-label">Data da Ocorrência</label>
+                                            <input type="date" id="dataOcorrencia" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="tipoOcorrencia" class="form-label">Tipo de Ocorrência</label>
+                                            <select id="tipoOcorrencia" class="form-control" required onchange="toggleQuantidadeField()">
+                                                <option value="">-- Selecione o Tipo --</option>
+                                                <option value="reclamacao">Reclamação Pós Venda</option>
+                                                <option value="etiquetaCancelada">Etiqueta Cancelada</option>
+                                                <option value="assertividade">Assertividade da Equipe</option>
+                                                <option value="relacionamento">Relacionamento com Supervisor</option>
+                                                <option value="notaLimpeza">Nota da Organização e Limpeza</option>
+                                                <option value="faltaSemJustificativa">Falta sem Justificativa</option>
+                                                <option value="advertenciaPonto">Advertência por Ponto</option>
+                                                <option value="advertenciaProcedimento">Advertência por Procedimento</option>
+                                                <option value="atestadoMedico">Atestado Médico</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="quantidadeOcorrencia" class="form-label" id="labelQuantidade">Quantidade</label>
+                                            
+                                            <input type="number" id="quantidadeOcorrencia" class="form-control" value="1" required>
+                                            
+                                            <select id="selectQualidadeRelacionamento" class="form-control" style="display: none;" required disabled>
+                                                <option value="" disabled selected>-- Selecione a Qualidade --</option>
+                                                <option value="0">Bom</option>
+                                                <option value="1">Mediano</option>
+                                                <option value="3">Ruim</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="descricaoOcorrencia" class="form-label">Descrição (Opcional)</label>
+                                        <textarea id="descricaoOcorrencia" class="form-control" rows="3" placeholder="Detalhes adicionais sobre a ocorrência..."></textarea>
+                                    </div>
+                                    
+                                    <button type="button" class="btn btn-primary btn-full" onclick="registrarOcorrencia()">
+                                        <i class="fas fa-plus-circle"></i>
+                                        Registrar Ocorrência
+                                    </button>
+                                </div>
+                                
+                                <h3 class="indicador-title">
+                                    <i class="fas fa-history"></i>
+                                    Ocorrências Registradas Hoje
+                                </h3>
+                                
+                                <div id="listaOcorrenciasHoje" class="list">
+                                    </div>
+                            </div>
+
+                            <div id="resultado" class="tab-content" role="tabpanel" aria-labelledby="resultado-tab">
+                                <h2 class="indicador-title">
+                                    <i class="fas fa-chart-line"></i>
+                                    Resultado da Avaliação
+                                </h2>
+                                
+                                <div class="form-group">
+                                    <label for="selectLiderResultado" class="form-label">Selecione o Líder para Visualizar</label>
+                                    <select id="selectLiderResultado" class="form-control" onchange="calcularResultadoLider()">
+                                        <option value="">-- Selecione o Líder --</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="periodoResultado" class="form-label">Período de Análise</label>
+                                    <select id="periodoResultado" class="form-control" onchange="calcularResultadoLider()">
+                                        <option value="hoje">Hoje</option>
+                                        <option value="semana">Esta Semana</option>
+                                        <option value="mes">Este Mês</option>
+                                        <option value="todos">Todo o Período</option>
+                                    </select>
+                                </div>
+                                
+                                <div id="resultadoContainer" style="display: none;">
+                                    <div class="score-display">
+                                        <p class="score-label">Pontuação Final</p>
+                                        <div id="pontuacaoFinal" class="score">100</div>
+                                        <p id="periodoAvaliacao" class="score-label"></p>
+                                    </div>
+
+                                    <h3 class="indicador-title">
+                                        <i class="fas fa-list-check"></i>
+                                        Detalhamento da Pontuação
+                                    </h3>
+                                    <div id="feedbackDetalhado" class="feedback-area"></div>
+                                    
+                                    <h3 class="indicador-title">
+                                        <i class="fas fa-table"></i>
+                                        Resumo das Ocorrências
+                                    </h3>
+                                    <div class="table-container">
+                                        <table class="table" id="tabelaResumoOcorrencias">
+                                            <thead>
+                                                <tr>
+                                                    <th>Indicador</th>
+                                                    <th>Ocorrências</th>
+                                                    <th>Pontos Perdidos</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                <div id="semDadosResultado" style="text-align: center; padding: 40px; color: var(--gray-500);">
+                                    <i class="fas fa-chart-bar" style="font-size: 48px; margin-bottom: 16px;"></i>
+                                    <p>Selecione um líder para visualizar o resultado da avaliação</p>
+                                </div>
+                            </div>
+                            
+                            <div id="historico" class="tab-content" role="tabpanel" aria-labelledby="historico-tab">
+                                <h2 class="indicador-title">
+                                    <i class="fas fa-history"></i>
+                                    Histórico Completo
+                                </h2>
+                                
+                                <div class="filtros-relatorio">
+                                    <div class="filtro-group">
+                                        <label for="filtroLiderHistorico">Filtrar por Líder</label>
+                                        <select id="filtroLiderHistorico" class="form-control" onchange="carregarHistorico()">
+                                            <option value="todos">Todos os Líderes</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="filtro-group">
+                                        <label for="filtroDataHistorico">Filtrar por Período</label>
+                                        <select id="filtroDataHistorico" class="form-control" onchange="carregarHistorico()">
+                                            <option value="7">Últimos 7 dias</option>
+                                            <option value="30">Últimos 30 dias</option>
+                                            <option value="90">Últimos 90 dias</option>
+                                            <option value="todos">Todo o Período</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="filtro-group">
+                                        <label for="filtroTipoHistorico">Filtrar por Tipo</label>
+                                        <select id="filtroTipoHistorico" class="form-control" onchange="carregarHistorico()">
+                                            <option value="todos">Todos os Tipos</option>
+                                            <option value="reclamacao">Reclamação Pós Venda</option>
+                                            <option value="etiquetaCancelada">Etiqueta Cancelada</option>
+                                            <option value="assertividade">Assertividade da Equipe</option>
+                                            <option value="relacionamento">Relacionamento com Supervisor</option>
+                                            <option value="notaLimpeza">Nota da Organização e Limpeza</option>
+                                            <option value="faltaSemJustificativa">Falta sem Justificativa</option>
+                                            <option value="advertenciaPonto">Advertência por Ponto</option>
+                                            <option value="advertenciaProcedimento">Advertência por Procedimento</option>
+                                            <option value="atestadoMedico">Atestado Médico</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div id="listaHistorico" class="list">
+                                    </div>
+                            </div>
+
+                            <div id="relatorios" class="tab-content" role="tabpanel" aria-labelledby="relatorios-tab">
+                                <h2 class="indicador-title">
+                                    <i class="fas fa-chart-bar"></i>
+                                    Relatórios e Exportação
+                                </h2>
+                                
+                                <div class="indicador-group">
+                                    <h3 class="indicador-title">Relatório Diário</h3>
+                                    
+                                    <div class="form-group">
+                                        <label for="dataRelatorioDiario" class="form-label">Data do Relatório</label>
+                                        <input type="date" id="dataRelatorioDiario" class="form-control" onchange="gerarRelatorioDiario()">
+                                    </div>
+                                    
+                                    <div id="relatorioDiarioContainer">
+                                        </div>
+                                </div>
+                                
+                                <div class="indicador-group">
+                                    <h3 class="indicador-title">Relatório Mensal</h3>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="mesRelatorio" class="form-label">Mês</label>
+                                            <select id="mesRelatorio" class="form-control" onchange="gerarRelatorioMensal()">
+                                                <option value="1">Janeiro</option>
+                                                <option value="2">Fevereiro</option>
+                                                <option value="3">Março</option>
+                                                <option value="4">Abril</option>
+                                                <option value="5">Maio</option>
+                                                <option value="6">Junho</option>
+                                                <option value="7">Julho</option>
+                                                <option value="8">Agosto</option>
+                                                <option value="9">Setembro</option>
+                                                <option value="10">Outubro</option>
+                                                <option value="11">Novembro</option>
+                                                <option value="12">Dezembro</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="anoRelatorio" class="form-label">Ano</label>
+                                            <select id="anoRelatorio" class="form-control" onchange="gerarRelatorioMensal()">
+                                                </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="relatorioMensalContainer">
+                                        </div>
+                                </div>
+                                
+                                <div class="indicador-group">
+                                    <h3 class="indicador-title">Relatório Anual</h3>
+                                    
+                                    <div class="form-group">
+                                        <label for="anoRelatorioAnual" class="form-label">Ano</label>
+                                        <select id="anoRelatorioAnual" class="form-control" onchange="gerarRelatorioAnual()">
+                                            </select>
+                                    </div>
+                                    
+                                    <div id="relatorioAnualContainer">
+                                        </div>
+                                </div>
+                                
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary" onclick="exportarRelatorioPDF()">
+                                        <i class="fas fa-file-pdf"></i>
+                                        Exportar para PDF
+                                    </button>
+                                    <button type="button" class="btn btn-success" onclick="exportarRelatorioExcel()">
+                                        <i class="fas fa-file-excel"></i>
+                                        Exportar para Excel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <div id="modalCadastroLider" class="modal" role="dialog" aria-labelledby="modalCadastroTitle">
+        <div class="modal-content">
+            <h2 id="modalCadastroTitle" class="modal-title">
+                <i class="fas fa-user-plus"></i>
+                Cadastrar Novo Líder
+            </h2>
+            <div class="form-group">
+                <label for="inputNovoLiderModal" class="form-label">Nome do Líder</label>
+                <input type="text" id="inputNovoLiderModal" class="form-control" placeholder="Digite o nome do líder">
+                <div id="novoLiderModal-help" class="error-message" style="display: none;"></div>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="btn btn-outline" onclick="fecharModalCadastro()">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="adicionarLiderModal()">Cadastrar</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="modalConfirmacao" class="modal" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalMessage">
+        <div class="modal-content">
+            <h2 id="modalTitle" class="modal-title">Confirmação</h2>
+            <p id="modalMessage" class="modal-message">Tem certeza que deseja limpar todos os dados do sistema? Esta ação não pode ser desfeita.</p>
+            <div class="modal-buttons">
+                <button type="button" class="btn btn-outline" onclick="fecharModal()">Cancelar</button>
+                <button type="button" class="btn btn-danger" onclick="limparTodosDados()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inicialização do sistema
+        document.addEventListener('DOMContentLoaded', function() {
+            inicializarSistema();
+            carregarLideres();
+            atualizarConfiguracoes();
+            carregarOcorrenciasHoje();
+            carregarHistorico();
+            preencherAnosRelatorios();
+            
+            // Definir data atual como padrão
+            const hoje = new Date();
+            document.getElementById('dataOcorrencia').valueAsDate = hoje;
+            document.getElementById('dataRelatorioDiario').valueAsDate = hoje;
+            
+            // Definir mês atual como padrão
+            document.getElementById('mesRelatorio').value = hoje.getMonth() + 1;
+            document.getElementById('anoRelatorio').value = hoje.getFullYear();
+            document.getElementById('anoRelatorioAnual').value = hoje.getFullYear();
+            
+            // Gerar relatórios iniciais
+            gerarRelatorioDiario();
+            gerarRelatorioMensal();
+            gerarRelatorioAnual();
+        });
+
+        // Funções principais do sistema
+        function inicializarSistema() {
+            // Verificar se existem dados salvos
+            if (!localStorage.getItem('lideres')) {
+                localStorage.setItem('lideres', JSON.stringify([]));
+            }
+            
+            if (!localStorage.getItem('ocorrencias')) {
+                localStorage.setItem('ocorrencias', JSON.stringify([]));
+            }
+            
+            if (!localStorage.getItem('configuracoes')) {
+                const configuracoesPadrao = {
+                    reclamacao: { nome: "Reclamação Pós Venda", peso: 5, limite: 0 },
+                    etiquetaCancelada: { nome: "Etiqueta Cancelada", peso: 5, limite: 1 },
+                    assertividade: { nome: "Assertividade da Equipe", peso: 10, limite: 0 },
+                    relacionamento: { nome: "Relacionamento com Supervisor", peso: 10, limite: 0 },
+                    notaLimpeza: { nome: "Nota da Organização e Limpeza", peso: 5, meta: 93 },
+                    faltaSemJustificativa: { nome: "Falta sem Justificativa", peso: 15, limite: 0 },
+                    advertenciaPonto: { nome: "Advertência por Ponto", peso: 8, limite: 1 },
+                    advertenciaProcedimento: { nome: "Advertência por Procedimento", peso: 15, limite: 0 },
+                    atestadoMedico: { nome: "Atestado Médico", peso: 0, acompanhamento: true }
+                };
+                localStorage.setItem('configuracoes', JSON.stringify(configuracoesPadrao));
+            }
+        }
+
+        function carregarLideres() {
+            const lideres = JSON.parse(localStorage.getItem('lideres'));
+            
+            // Atualizar todos os selects de líderes
+            const selects = [
+                'selectLiderOcorrencia',
+                'selectLiderResultado', 
+                'filtroLiderHistorico'
+            ];
+            
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                if (select) {
+                    select.innerHTML = selectId === 'filtroLiderHistorico' 
+                        ? '<option value="todos">Todos os Líderes</option>'
+                        : '<option value="">-- Selecione o Líder --</option>';
+                    
+                    lideres.forEach(lider => {
+                        const option = document.createElement('option');
+                        option.value = lider;
+                        option.textContent = lider;
+                        select.appendChild(option);
+                    });
+                }
+            });
+        }
+
+        function abrirModalCadastroLider() {
+            document.getElementById('modalCadastroLider').style.display = 'flex';
+            document.getElementById('inputNovoLiderModal').focus();
+        }
+
+        function fecharModalCadastro() {
+            document.getElementById('modalCadastroLider').style.display = 'none';
+            document.getElementById('inputNovoLiderModal').value = '';
+            limparErro('inputNovoLiderModal');
+        }
+
+        function adicionarLiderModal() {
+            const inputNovoLider = document.getElementById('inputNovoLiderModal');
+            const nomeLider = inputNovoLider.value.trim();
+            
+            if (!nomeLider) {
+                mostrarErro('inputNovoLiderModal', 'Por favor, insira um nome para o líder.');
+                return;
+            }
+            
+            const lideres = JSON.parse(localStorage.getItem('lideres'));
+            
+            if (lideres.includes(nomeLider)) {
+                mostrarErro('inputNovoLiderModal', 'Este líder já está cadastrado.');
+                return;
+            }
+            
+            lideres.push(nomeLider);
+            localStorage.setItem('lideres', JSON.stringify(lideres));
+            
+            fecharModalCadastro();
+            carregarLideres();
+            
+            // Feedback visual
+            alert(`Líder "${nomeLider}" cadastrado com sucesso!`);
+        }
+
+        // NOVO: Função para alternar o campo de quantidade com o campo de qualidade do relacionamento
+        function toggleQuantidadeField() {
+            const tipo = document.getElementById('tipoOcorrencia').value;
+            const inputQuantidade = document.getElementById('quantidadeOcorrencia');
+            const selectQualidade = document.getElementById('selectQualidadeRelacionamento');
+            const labelQuantidade = document.getElementById('labelQuantidade');
+
+            if (tipo === 'relacionamento') {
+                // Mostrar select especial para qualidade
+                inputQuantidade.style.display = 'none';
+                inputQuantidade.required = false;
+                inputQuantidade.disabled = true; 
+                
+                selectQualidade.style.display = 'block';
+                selectQualidade.required = true;
+                selectQualidade.disabled = false;
+                
+                labelQuantidade.textContent = 'Qualidade do Relacionamento';
+            } else {
+                // Mostrar input padrão de quantidade
+                inputQuantidade.style.display = 'block';
+                inputQuantidade.required = true;
+                inputQuantidade.disabled = false;
+                
+                selectQualidade.style.display = 'none';
+                selectQualidade.required = false;
+                selectQualidade.disabled = true;
+                
+                labelQuantidade.textContent = 'Quantidade';
+            }
+        }
+        
+        function registrarOcorrencia() {
+            const lider = document.getElementById('selectLiderOcorrencia').value;
+            const data = document.getElementById('dataOcorrencia').value;
+            const tipo = document.getElementById('tipoOcorrencia').value;
+            const descricao = document.getElementById('descricaoOcorrencia').value;
+            
+            let quantidade;
+            
+            // Determinar o valor da quantidade com base no tipo de ocorrência
+            if (tipo === 'relacionamento') {
+                const selectQualidade = document.getElementById('selectQualidadeRelacionamento');
+                if (!selectQualidade.value) {
+                    alert('Por favor, selecione a qualidade do relacionamento.');
+                    return;
+                }
+                // O valor do select já é a quantidade de pontos (0, 1 ou 3)
+                quantidade = parseInt(selectQualidade.value);
+            } else {
+                // Para todos os outros tipos, usa o input padrão
+                quantidade = parseInt(document.getElementById('quantidadeOcorrencia').value);
+            }
+            
+            // Validações
+            if (!lider) {
+                alert('Por favor, selecione um líder.');
+                return;
+            }
+            
+            if (!data) {
+                alert('Por favor, selecione uma data.');
+                return;
+            }
+            
+            if (!tipo) {
+                alert('Por favor, selecione um tipo de ocorrência.');
+                return;
+            }
+            
+            // Validação de quantidade (para input padrão e select de relacionamento)
+            if (isNaN(quantidade) || quantidade < 0) {
+                alert('Por favor, insira uma quantidade válida (igual ou superior a zero).');
+                return;
+            }
+            
+            // Criar objeto de ocorrência
+            const ocorrencia = {
+                id: Date.now().toString(),
+                lider: lider,
+                data: data,
+                tipo: tipo,
+                quantidade: quantidade, // Quantidade já é determinada acima
+                descricao: descricao,
+                dataRegistro: new Date().toISOString()
+            };
+            
+            // Salvar ocorrência
+            const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
+            ocorrencias.push(ocorrencia);
+            localStorage.setItem('ocorrencias', JSON.stringify(ocorrencias));
+            
+            // Limpar formulário
+            document.getElementById('descricaoOcorrencia').value = '';
+            
+            // Resetar campo de quantidade/qualidade
+            if (tipo === 'relacionamento') {
+                document.getElementById('selectQualidadeRelacionamento').value = '';
+            } else {
+                document.getElementById('quantidadeOcorrencia').value = 1;
+            }
+            
+            // Recarregar listas
+            carregarOcorrenciasHoje();
+            carregarHistorico();
+            
+            // Feedback visual
+            const btn = document.querySelector('#ocorrencias .btn-primary');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Ocorrência Registrada!';
+            btn.classList.add('btn-success');
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.remove('btn-success');
+            }, 2000);
+        }
+
+        function carregarOcorrenciasHoje() {
+            const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
+            const listaOcorrenciasHoje = document.getElementById('listaOcorrenciasHoje');
+            
+            // Data de hoje
+            const hoje = new Date().toISOString().split('T')[0];
+            
+            // Filtrar ocorrências de hoje
+            const ocorrenciasHoje = ocorrencias.filter(oc => oc.data === hoje);
+            
+            listaOcorrenciasHoje.innerHTML = '';
+            
+            if (ocorrenciasHoje.length === 0) {
+                listaOcorrenciasHoje.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--gray-500);">
+                        <i class="fas fa-clipboard-list" style="font-size: 48px; margin-bottom: 16px;"></i>
+                        <p>Nenhuma ocorrência registrada hoje</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Adicionar ocorrências à lista
+            ocorrenciasHoje.forEach(ocorrencia => {
+                const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
+                const config = configuracoes[ocorrencia.tipo];
+                
+                // Texto descritivo para o campo Quantidade/Qualidade
+                let quantidadeTexto = `${ocorrencia.quantidade} ocorrência(s)`;
+                if (ocorrencia.tipo === 'relacionamento') {
+                    switch(ocorrencia.quantidade) {
+                        case 0: quantidadeTexto = 'Bom (0 pts)'; break;
+                        case 1: quantidadeTexto = 'Mediano (1 pt)'; break;
+                        case 3: quantidadeTexto = 'Ruim (3 pts)'; break;
+                        default: quantidadeTexto = 'Relacionamento (Valor: ' + ocorrencia.quantidade + ')';
+                    }
+                }
+
+                const item = document.createElement('div');
+                item.className = 'ocorrencia-item';
+                item.innerHTML = `
+                    <div class="ocorrencia-info">
+                        <div class="ocorrencia-data">
+                            ${ocorrencia.lider} - ${formatarHora(ocorrencia.dataRegistro)}
+                        </div>
+                        <div class="ocorrencia-detalhes">
+                            <strong>${config.nome}</strong> - ${quantidadeTexto}
+                            ${ocorrencia.descricao ? `<br>${ocorrencia.descricao}` : ''}
+                        </div>
+                    </div>
+                    <div class="ocorrencia-acoes">
+                        <button type="button" class="btn btn-outline" onclick="excluirOcorrencia('${ocorrencia.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                listaOcorrenciasHoje.appendChild(item);
+            });
+        }
+
+        function carregarHistorico() {
+            const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
+            const listaHistorico = document.getElementById('listaHistorico');
+            const filtroLider = document.getElementById('filtroLiderHistorico').value;
+            const filtroData = document.getElementById('filtroDataHistorico').value;
+            const filtroTipo = document.getElementById('filtroTipoHistorico').value;
+            
+            listaHistorico.innerHTML = '';
+            
+            // Aplicar filtros
+            let ocorrenciasFiltradas = ocorrencias;
+            
+            if (filtroLider !== 'todos') {
+                ocorrenciasFiltradas = ocorrenciasFiltradas.filter(oc => oc.lider === filtroLider);
+            }
+            
+            if (filtroData !== 'todos') {
+                const dias = parseInt(filtroData);
+                const dataLimite = new Date();
+                dataLimite.setDate(dataLimite.getDate() - dias);
+                
+                ocorrenciasFiltradas = ocorrenciasFiltradas.filter(oc => {
+                    const dataOcorrencia = new Date(oc.data);
+                    return dataOcorrencia >= dataLimite;
+                });
+            }
+            
+            if (filtroTipo !== 'todos') {
+                ocorrenciasFiltradas = ocorrenciasFiltradas.filter(oc => oc.tipo === filtroTipo);
+            }
+            
+            // Ordenar por data (mais recente primeiro)
+            ocorrenciasFiltradas.sort((a, b) => new Date(b.data) - new Date(a.data));
+            
+            if (ocorrenciasFiltradas.length === 0) {
+                listaHistorico.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--gray-500);">
+                        <i class="fas fa-clipboard-list" style="font-size: 48px; margin-bottom: 16px;"></i>
+                        <p>Nenhuma ocorrência encontrada</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Agrupar por data
+            const ocorrenciasPorData = {};
+            ocorrenciasFiltradas.forEach(ocorrencia => {
+                if (!ocorrenciasPorData[ocorrencia.data]) {
+                    ocorrenciasPorData[ocorrencia.data] = [];
+                }
+                ocorrenciasPorData[ocorrencia.data].push(ocorrencia);
+            });
+            
+            // Adicionar ocorrências à lista
+            Object.keys(ocorrenciasPorData).sort().reverse().forEach(data => {
+                // Cabeçalho da data
+                const header = document.createElement('div');
+                header.className = 'indicador-title';
+                header.style.marginTop = '20px';
+                header.innerHTML = `<i class="fas fa-calendar-day"></i> ${formatarData(data)}`;
+                listaHistorico.appendChild(header);
+                
+                // Ocorrências da data
+                ocorrenciasPorData[data].forEach(ocorrencia => {
+                    const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
+                    const config = configuracoes[ocorrencia.tipo];
+
+                    // Texto descritivo para o campo Quantidade/Qualidade
+                    let quantidadeTexto = `${ocorrencia.quantidade} ocorrência(s)`;
+                    if (ocorrencia.tipo === 'relacionamento') {
+                        switch(ocorrencia.quantidade) {
+                            case 0: quantidadeTexto = 'Bom (0 pts)'; break;
+                            case 1: quantidadeTexto = 'Mediano (1 pt)'; break;
+                            case 3: quantidadeTexto = 'Ruim (3 pts)'; break;
+                            default: quantidadeTexto = 'Relacionamento (Valor: ' + ocorrencia.quantidade + ')';
+                        }
+                    }
+                    
+                    const item = document.createElement('div');
+                    item.className = 'ocorrencia-item';
+                    item.innerHTML = `
+                        <div class="ocorrencia-info">
+                            <div class="ocorrencia-data">
+                                ${ocorrencia.lider} - ${formatarHora(ocorrencia.dataRegistro)}
+                            </div>
+                            <div class="ocorrencia-detalhes">
+                                <strong>${config.nome}</strong> - ${quantidadeTexto}
+                                ${ocorrencia.descricao ? `<br>${ocorrencia.descricao}` : ''}
+                            </div>
+                        </div>
+                        <div class="ocorrencia-acoes">
+                            <button type="button" class="btn btn-outline" onclick="excluirOcorrencia('${ocorrencia.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    listaHistorico.appendChild(item);
+                });
+            });
+        }
+
+        function excluirOcorrencia(id) {
+            if (confirm('Tem certeza que deseja excluir esta ocorrência?')) {
+                const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
+                const ocorrenciasFiltradas = ocorrencias.filter(oc => oc.id !== id);
+                localStorage.setItem('ocorrencias', JSON.stringify(ocorrenciasFiltradas));
+                carregarOcorrenciasHoje();
+                carregarHistorico();
+            }
+        }
+
+        function calcularResultadoLider() {
+            const lider = document.getElementById('selectLiderResultado').value;
+            const periodo = document.getElementById('periodoResultado').value;
+            
+            if (!lider) {
+                document.getElementById('resultadoContainer').style.display = 'none';
+                document.getElementById('semDadosResultado').style.display = 'block';
+                return;
+            }
+            
+            const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
+            const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
+            
+            // Filtrar ocorrências do líder por período
+            let ocorrenciasLider = ocorrencias.filter(oc => oc.lider === lider);
+            
+            if (periodo !== 'todos') {
+                const hoje = new Date();
+                let dataInicio;
+                
+                switch(periodo) {
+                    case 'hoje':
+                        dataInicio = new Date(hoje.toISOString().split('T')[0]);
+                        break;
+                    case 'semana':
+                        dataInicio = new Date(hoje);
+                        dataInicio.setDate(hoje.getDate() - 7);
+                        break;
+                    case 'mes':
+                        dataInicio = new Date(hoje);
+                        dataInicio.setMonth(hoje.getMonth() - 1);
+                        break;
+                }
+                
+                ocorrenciasLider = ocorrenciasLider.filter(oc => {
+                    const dataOcorrencia = new Date(oc.data);
+                    return dataOcorrencia >= dataInicio;
+                });
+            }
+            
+            if (ocorrenciasLider.length === 0) {
+                document.getElementById('resultadoContainer').style.display = 'none';
+                document.getElementById('semDadosResultado').style.display = 'block';
+                document.getElementById('semDadosResultado').innerHTML = `
+                    <i class="fas fa-clipboard-list" style="font-size: 48px; margin-bottom: 16px;"></i>
+                    <p>Nenhuma ocorrência registrada para ${lider} no período selecionado</p>
+                `;
+                return;
+            }
+            
+            // Calcular pontuação
+            let pontuacaoFinal = 100;
+            const resumoOcorrencias = {};
+            const feedback = [];
+            
+            ocorrenciasLider.forEach(ocorrencia => {
+                const config = configuracoes[ocorrencia.tipo];
+                
+                // Inicializar resumo se necessário
+                if (!resumoOcorrencias[ocorrencia.tipo]) {
+                    resumoOcorrencias[ocorrencia.tipo] = {
+                        nome: config.nome,
+                        quantidade: 0,
+                        pontosPerdidos: 0
+                    };
+                }
+                
+                // Calcular pontos perdidos
+                let pontosPerdidos = 0;
+                
+                if (ocorrencia.tipo === 'notaLimpeza') {
+                    // Lógica específica para nota de limpeza
+                    if (ocorrencia.quantidade < config.meta) {
+                        pontosPerdidos = config.peso;
+                    }
+                } else if (ocorrencia.tipo === 'relacionamento') {
+                    // Lógica específica para relacionamento
+                    // A quantidade registrada JÁ É a pontuação de perda (0, 1 ou 3)
+                    pontosPerdidos = ocorrencia.quantidade;
+                } else {
+                    // Lógica padrão para outros indicadores
+                    if (ocorrencia.quantidade > config.limite) {
+                        pontosPerdidos = config.peso * (ocorrencia.quantidade - config.limite);
+                    }
+                }
+                
+                // Atualizar resumo
+                // Para Relacionamento, a 'quantidade' é na verdade a pontuação,
+                // mas vamos somá-la aqui para mostrar o resumo.
+                if (ocorrencia.tipo === 'relacionamento') {
+                     // No resumo, vamos somar 1 ocorrência para 'relacionamento'
+                    resumoOcorrencias[ocorrencia.tipo].quantidade += 1;
+                } else {
+                    resumoOcorrencias[ocorrencia.tipo].quantidade += ocorrencia.quantidade;
+                }
+
+                resumoOcorrencias[ocorrencia.tipo].pontosPerdidos += pontosPerdidos;
+                
+                // Atualizar pontuação final
+                pontuacaoFinal -= pontosPerdidos;
+                
+                // Adicionar ao feedback se houver perda de pontos
+                if (pontosPerdidos > 0) {
+                    let mensagem = '';
+                    if (ocorrencia.tipo === 'relacionamento') {
+                        let qualidade = '';
+                        switch(ocorrencia.quantidade) {
+                            case 1: qualidade = 'Mediano'; break;
+                            case 3: qualidade = 'Ruim'; break;
+                        }
+                        mensagem = `${config.nome} (${qualidade}): Perda de ${pontosPerdidos} pontos`;
+                    } else {
+                        mensagem = `${config.nome}: ${ocorrencia.quantidade} ocorrência(s) - Perda de ${pontosPerdidos} pontos`;
+                    }
+
+                    feedback.push({
+                        tipo: 'perda',
+                        mensagem: mensagem
+                    });
+                }
+            });
+            
+            // Garantir que a pontuação não seja negativa
+            pontuacaoFinal = Math.max(0, pontuacaoFinal);
+            
+            // Exibir resultado
+            document.getElementById('pontuacaoFinal').textContent = Math.round(pontuacaoFinal);
+            
+            let periodoTexto = '';
+            switch(periodo) {
+                case 'hoje': periodoTexto = 'Hoje'; break;
+                case 'semana': periodoTexto = 'Esta Semana'; break;
+                case 'mes': periodoTexto = 'Este Mês'; break;
+                case 'todos': periodoTexto = 'Todo o Período'; break;
+            }
+            document.getElementById('periodoAvaliacao').textContent = `Período: ${periodoTexto}`;
+            
+            // Exibir feedback detalhado
+            const feedbackContainer = document.getElementById('feedbackDetalhado');
+            feedbackContainer.innerHTML = '';
+            
+            if (feedback.length === 0) {
+                feedbackContainer.innerHTML = '<p class="ganho">Nenhuma perda de pontos. Pontuação máxima mantida!</p>';
+            } else {
+                feedback.forEach(item => {
+                    const feedbackItem = document.createElement('div');
+                    feedbackItem.className = `feedback-item ${item.tipo}`;
+                    feedbackItem.textContent = item.mensagem;
+                    feedbackContainer.appendChild(feedbackItem);
+                });
+            }
+            
+            // Exibir resumo das ocorrências
+            const tabelaResumo = document.getElementById('tabelaResumoOcorrencias').querySelector('tbody');
+            tabelaResumo.innerHTML = '';
+            
+            Object.values(resumoOcorrencias).forEach(resumo => {
+                const linha = document.createElement('tr');
+                let quantidadeTexto = resumo.quantidade;
+                if (resumo.nome === 'Relacionamento com Supervisor') {
+                    // Para o resumo do relacionamento, a "quantidade" aqui é o número de vezes que foi avaliado,
+                    // mas o resumo detalhado já trata disso. Para simplicidade, deixaremos a contagem.
+                }
+
+                linha.innerHTML = `
+                    <td>${resumo.nome}</td>
+                    <td>${quantidadeTexto}</td>
+                    <td>${resumo.pontosPerdidos}</td>
+                `;
+                tabelaResumo.appendChild(linha);
+            });
+            
+            // Mostrar container de resultado
+            document.getElementById('resultadoContainer').style.display = 'block';
+            document.getElementById('semDadosResultado').style.display = 'none';
+        }
+
+        function preencherAnosRelatorios() {
+            const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
+            const anos = new Set();
+            
+            // Extrair anos das ocorrências
+            ocorrencias.forEach(oc => {
+                const ano = new Date(oc.data).getFullYear();
+                anos.add(ano);
+            });
+            
+            // Adicionar ano atual se não houver ocorrências
+            if (anos.size === 0) {
+                anos.add(new Date().getFullYear());
+            }
+            
+            // Ordenar anos (decrescente)
+            const anosOrdenados = Array.from(anos).sort((a, b) => b - a);
+            
+            // Preencher selects de ano
+            const selectsAno = ['anoRelatorio', 'anoRelatorioAnual'];
+            selectsAno.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                select.innerHTML = '';
+                
+                anosOrdenados.forEach(ano => {
+                    const option = document.createElement('option');
+                    option.value = ano;
+                    option.textContent = ano;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        function gerarRelatorioDiario() {
+            const data = document.getElementById('dataRelatorioDiario').value;
+            const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
+            const container = document.getElementById('relatorioDiarioContainer');
+            
+            // Filtrar ocorrências da data selecionada
+            const ocorrenciasDia = ocorrencias.filter(oc => oc.data === data);
+            
+            if (ocorrenciasDia.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: var(--gray-500);">
+                        <i class="fas fa-clipboard-list" style="font-size: 36px; margin-bottom: 12px;"></i>
+                        <p>Nenhuma ocorrência registrada em ${formatarData(data)}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Agrupar por líder
+            const ocorrenciasPorLider = {};
+            ocorrenciasDia.forEach(oc => {
+                if (!ocorrenciasPorLider[oc.lider]) {
+                    ocorrenciasPorLider[oc.lider] = [];
+                }
+                ocorrenciasPorLider[oc.lider].push(oc);
+            });
+            
+            // Gerar relatório
+            let html = `<h4>Relatório Diário - ${formatarData(data)}</h4>`;
+            
+            Object.keys(ocorrenciasPorLider).forEach(lider => {
+                html += `<h5 style="margin-top: 16px;">${lider}</h5>`;
+                html += `<div class="table-container"><table class="table"><thead><tr><th>Tipo</th><th>Quantidade/Qualidade</th><th>Descrição</th></tr></thead><tbody>`;
+                
+                ocorrenciasPorLider[lider].forEach(oc => {
+                    const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
+                    const config = configuracoes[oc.tipo];
+
+                    let quantidadeTexto = oc.quantidade;
+                    if (oc.tipo === 'relacionamento') {
+                        switch(oc.quantidade) {
+                            case 0: quantidadeTexto = 'Bom (0 pts)'; break;
+                            case 1: quantidadeTexto = 'Mediano (1 pt)'; break;
+                            case 3: quantidadeTexto = 'Ruim (3 pts)'; break;
+                            default: quantidadeTexto = 'Valor: ' + oc.quantidade;
+                        }
+                    }
+                    
+                    html += `<tr>
+                        <td>${config.nome}</td>
+                        <td>${quantidadeTexto}</td>
+                        <td>${oc.descricao || '-'}</td>
+                    </tr>`;
+                });
+                
+                html += `</tbody></table></div>`;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function gerarRelatorioMensal() {
+            const mes = parseInt(document.getElementById('mesRelatorio').value);
+            const ano = parseInt(document.getElementById('anoRelatorio').value);
+            const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
+            const container = document.getElementById('relatorioMensalContainer');
+            
+            // Filtrar ocorrências do mês/ano selecionado
+            const ocorrenciasMes = ocorrencias.filter(oc => {
+                const data = new Date(oc.data);
+                return data.getMonth() + 1 === mes && data.getFullYear() === ano;
+            });
+            
+            if (ocorrenciasMes.length === 0) {
+                const nomeMes = obterNomeMes(mes);
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: var(--gray-500);">
+                        <i class="fas fa-clipboard-list" style="font-size: 36px; margin-bottom: 12px;"></i>
+                        <p>Nenhuma ocorrência registrada em ${nomeMes}/${ano}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Agrupar por líder e tipo
+            const resumoMensal = {};
+            ocorrenciasMes.forEach(oc => {
+                if (!resumoMensal[oc.lider]) {
+                    resumoMensal[oc.lider] = {};
+                }
+                if (!resumoMensal[oc.lider][oc.tipo]) {
+                    resumoMensal[oc.lider][oc.tipo] = 0;
+                }
+                
+                // Para relacionamento, contamos como 1 ocorrência para fins de resumo
+                resumoMensal[oc.lider][oc.tipo] += (oc.tipo === 'relacionamento') ? 1 : oc.quantidade;
+            });
+            
+            // Gerar relatório
+            const nomeMes = obterNomeMes(mes);
+            let html = `<h4>Relatório Mensal - ${nomeMes}/${ano}</h4>`;
+            html += `<div class="table-container"><table class="table"><thead><tr><th>Líder</th>`;
+            
+            // Cabeçalhos dos tipos
+            const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
+            Object.keys(configuracoes).forEach(tipo => {
+                html += `<th>${configuracoes[tipo].nome}</th>`;
+            });
+            
+            html += `<th>Total</th></tr></thead><tbody>`;
+            
+            // Dados dos líderes
+            Object.keys(resumoMensal).forEach(lider => {
+                html += `<tr><td>${lider}</td>`;
+                let totalLider = 0;
+                
+                Object.keys(configuracoes).forEach(tipo => {
+                    const quantidade = resumoMensal[lider][tipo] || 0;
+                    html += `<td>${quantidade}</td>`;
+                    totalLider += quantidade;
+                });
+                
+                html += `<td><strong>${totalLider}</strong></td></tr>`;
+            });
+            
+            // Totais por tipo
+            html += `<tr><td><strong>Total</strong></td>`;
+            let totalGeral = 0;
+            
+            Object.keys(configuracoes).forEach(tipo => {
+                let totalTipo = 0;
+                Object.keys(resumoMensal).forEach(lider => {
+                    totalTipo += resumoMensal[lider][tipo] || 0;
+                });
+                html += `<td><strong>${totalTipo}</strong></td>`;
+                totalGeral += totalTipo;
+            });
+            
+            html += `<td><strong>${totalGeral}</strong></td></tr>`;
+            html += `</tbody></table></div>`;
+            
+            container.innerHTML = html;
+        }
+
+        function gerarRelatorioAnual() {
+            const ano = parseInt(document.getElementById('anoRelatorioAnual').value);
+            const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
+            const container = document.getElementById('relatorioAnualContainer');
+            
+            // Filtrar ocorrências do ano selecionado
+            const ocorrenciasAno = ocorrencias.filter(oc => {
+                const data = new Date(oc.data);
+                return data.getFullYear() === ano;
+            });
+            
+            if (ocorrenciasAno.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: var(--gray-500);">
+                        <i class="fas fa-clipboard-list" style="font-size: 36px; margin-bottom: 12px;"></i>
+                        <p>Nenhuma ocorrência registrada em ${ano}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Agrupar por mês e tipo
+            const resumoAnual = {};
+            ocorrenciasAno.forEach(oc => {
+                const data = new Date(oc.data);
+                const mes = data.getMonth() + 1;
+                
+                if (!resumoAnual[mes]) {
+                    resumoAnual[mes] = {};
+                }
+                if (!resumoAnual[mes][oc.tipo]) {
+                    resumoAnual[mes][oc.tipo] = 0;
+                }
+                
+                // Para relacionamento, contamos como 1 ocorrência para fins de resumo
+                resumoAnual[mes][oc.tipo] += (oc.tipo === 'relacionamento') ? 1 : oc.quantidade;
+            });
+            
+            // Gerar relatório
+            let html = `<h4>Relatório Anual - ${ano}</h4>`;
+            html += `<div class="table-container"><table class="table"><thead><tr><th>Mês</th>`;
+            
+            // Cabeçalhos dos tipos
+            const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
+            Object.keys(configuracoes).forEach(tipo => {
+                html += `<th>${configuracoes[tipo].nome}</th>`;
+            });
+            
+            html += `<th>Total</th></tr></thead><tbody>`;
+            
+            // Dados dos meses
+            for (let mes = 1; mes <= 12; mes++) {
+                if (resumoAnual[mes]) {
+                    html += `<tr><td>${obterNomeMes(mes)}</td>`;
+                    let totalMes = 0;
+                    
+                    Object.keys(configuracoes).forEach(tipo => {
+                        const quantidade = resumoAnual[mes][tipo] || 0;
+                        html += `<td>${quantidade}</td>`;
+                        totalMes += quantidade;
+                    });
+                    
+                    html += `<td><strong>${totalMes}</strong></td></tr>`;
+                }
+            }
+            
+            // Totais anuais
+            html += `<tr><td><strong>Total Anual</strong></td>`;
+            let totalGeral = 0;
+            
+            Object.keys(configuracoes).forEach(tipo => {
+                let totalTipo = 0;
+                for (let mes = 1; mes <= 12; mes++) {
+                    if (resumoAnual[mes]) {
+                        totalTipo += resumoAnual[mes][tipo] || 0;
+                    }
+                }
+                html += `<td><strong>${totalTipo}</strong></td>`;
+                totalGeral += totalTipo;
+            });
+            
+            html += `<td><strong>${totalGeral}</strong></td></tr>`;
+            html += `</tbody></table></div>`;
+            
+            container.innerHTML = html;
+        }
+
+        function atualizarConfiguracoes() {
+            // Esta função seria usada para atualizar as configurações do sistema
+            // Implementação básica para demonstração
+        }
+
+        function exportarRelatorioPDF() {
+            alert('Funcionalidade de exportação para PDF será implementada em breve!');
+        }
+
+        function exportarRelatorioExcel() {
+            alert('Funcionalidade de exportação para Excel será implementada em breve!');
+        }
+
+        function mostrarModalConfirmacao() {
+            document.getElementById('modalConfirmacao').style.display = 'flex';
+        }
+
+        function fecharModal() {
+            document.getElementById('modalConfirmacao').style.display = 'none';
+        }
+
+        function limparTodosDados() {
+            localStorage.clear();
+            inicializarSistema();
+            carregarLideres();
+            carregarOcorrenciasHoje();
+            carregarHistorico();
+            fecharModal();
+            alert('Todos os dados foram removidos do sistema.');
+        }
+
+        // Funções auxiliares
+        function openTab(evt, tabName) {
+            // Esconder todas as abas
+            const tabcontent = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove('active');
+            }
+            
+            // Remover classe active de todos os botões
+            const tablinks = document.getElementsByClassName('tab-button');
+            for (let i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove('active');
+                tablinks[i].setAttribute('aria-selected', 'false');
+            }
+            
+            // Mostrar a aba atual e adicionar classe active ao botão
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
+            evt.currentTarget.setAttribute('aria-selected', 'true');
+            
+            // Atualizar dados específicos da aba
+            if (tabName === 'resultado') {
+                document.getElementById('selectLiderResultado').value = '';
+                document.getElementById('resultadoContainer').style.display = 'none';
+                document.getElementById('semDadosResultado').style.display = 'block';
+            } else if (tabName === 'historico') {
+                carregarHistorico();
+            }
+        }
+
+        function formatarData(dataString) {
+            const data = new Date(dataString);
+            return data.toLocaleDateString('pt-BR');
+        }
+
+        function formatarHora(dataString) {
+            const data = new Date(dataString);
+            return data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function obterNomeMes(mes) {
+            const meses = [
+                'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+            ];
+            return meses[mes - 1];
+        }
+
+        function mostrarErro(campoId, mensagem) {
+            const elementoErro = document.getElementById(`${campoId}-help`);
+            if (elementoErro) {
+                elementoErro.textContent = mensagem;
+                elementoErro.style.display = 'block';
+                
+                const campo = document.getElementById(campoId);
+                campo.classList.add('error');
+                campo.focus();
+            }
+        }
+
+        function limparErro(campoId) {
+            const elementoErro = document.getElementById(`${campoId}-help`);
+            if (elementoErro) {
+                elementoErro.style.display = 'none';
+                
+                const campo = document.getElementById(campoId);
+                campo.classList.remove('error');
+            }
+        }
+    </script>
+</body>
+</html>
