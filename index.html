@@ -913,9 +913,9 @@
                                             
                                             <select id="selectQualidadeRelacionamento" class="form-control" style="display: none;" required disabled>
                                                 <option value="" disabled selected>-- Selecione a Qualidade --</option>
-                                                <option value="0">Bom</option>
-                                                <option value="1">Mediano</option>
-                                                <option value="3">Ruim</option>
+                                                <option value="bom">Bom</option>
+                                                <option value="mediano">Mediano</option>
+                                                <option value="ruim">Ruim</option>
                                             </select>
                                         </div>
                                     </div>
@@ -1274,7 +1274,7 @@
             alert(`Líder "${nomeLider}" cadastrado com sucesso!`);
         }
 
-        // NOVO: Função para alternar o campo de quantidade com o campo de qualidade do relacionamento
+        // CORREÇÃO: Função para alternar o campo de quantidade com o campo de qualidade do relacionamento
         function toggleQuantidadeField() {
             const tipo = document.getElementById('tipoOcorrencia').value;
             const inputQuantidade = document.getElementById('quantidadeOcorrencia');
@@ -1306,6 +1306,7 @@
             }
         }
         
+        // CORREÇÃO: Função para registrar ocorrência com lógica corrigida para relacionamento
         function registrarOcorrencia() {
             const lider = document.getElementById('selectLiderOcorrencia').value;
             const data = document.getElementById('dataOcorrencia').value;
@@ -1313,6 +1314,7 @@
             const descricao = document.getElementById('descricaoOcorrencia').value;
             
             let quantidade;
+            let qualidadeRelacionamento = null;
             
             // Determinar o valor da quantidade com base no tipo de ocorrência
             if (tipo === 'relacionamento') {
@@ -1321,8 +1323,9 @@
                     alert('Por favor, selecione a qualidade do relacionamento.');
                     return;
                 }
-                // O valor do select já é a quantidade de pontos (0, 1 ou 3)
-                quantidade = parseInt(selectQualidade.value);
+                // Armazenamos a qualidade como texto e a quantidade será calculada posteriormente
+                qualidadeRelacionamento = selectQualidade.value;
+                quantidade = 1; // Para relacionamento, sempre contamos como 1 ocorrência
             } else {
                 // Para todos os outros tipos, usa o input padrão
                 quantidade = parseInt(document.getElementById('quantidadeOcorrencia').value);
@@ -1344,8 +1347,8 @@
                 return;
             }
             
-            // Validação de quantidade (para input padrão e select de relacionamento)
-            if (isNaN(quantidade) || quantidade < 0) {
+            // Validação de quantidade (para input padrão)
+            if (tipo !== 'relacionamento' && (isNaN(quantidade) || quantidade < 0)) {
                 alert('Por favor, insira uma quantidade válida (igual ou superior a zero).');
                 return;
             }
@@ -1356,7 +1359,8 @@
                 lider: lider,
                 data: data,
                 tipo: tipo,
-                quantidade: quantidade, // Quantidade já é determinada acima
+                quantidade: quantidade,
+                qualidadeRelacionamento: qualidadeRelacionamento, // Nova propriedade para armazenar a qualidade
                 descricao: descricao,
                 dataRegistro: new Date().toISOString()
             };
@@ -1392,6 +1396,7 @@
             }, 2000);
         }
 
+        // CORREÇÃO: Função para carregar ocorrências de hoje com lógica corrigida
         function carregarOcorrenciasHoje() {
             const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
             const listaOcorrenciasHoje = document.getElementById('listaOcorrenciasHoje');
@@ -1422,11 +1427,12 @@
                 // Texto descritivo para o campo Quantidade/Qualidade
                 let quantidadeTexto = `${ocorrencia.quantidade} ocorrência(s)`;
                 if (ocorrencia.tipo === 'relacionamento') {
-                    switch(ocorrencia.quantidade) {
-                        case 0: quantidadeTexto = 'Bom (0 pts)'; break;
-                        case 1: quantidadeTexto = 'Mediano (1 pt)'; break;
-                        case 3: quantidadeTexto = 'Ruim (3 pts)'; break;
-                        default: quantidadeTexto = 'Relacionamento (Valor: ' + ocorrencia.quantidade + ')';
+                    // Para relacionamento, mostramos a qualidade em vez da quantidade
+                    switch(ocorrencia.qualidadeRelacionamento) {
+                        case 'bom': quantidadeTexto = 'Bom'; break;
+                        case 'mediano': quantidadeTexto = 'Mediano'; break;
+                        case 'ruim': quantidadeTexto = 'Ruim'; break;
+                        default: quantidadeTexto = 'Relacionamento';
                     }
                 }
 
@@ -1452,6 +1458,7 @@
             });
         }
 
+        // CORREÇÃO: Função para carregar histórico com lógica corrigida
         function carregarHistorico() {
             const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
             const listaHistorico = document.getElementById('listaHistorico');
@@ -1522,11 +1529,12 @@
                     // Texto descritivo para o campo Quantidade/Qualidade
                     let quantidadeTexto = `${ocorrencia.quantidade} ocorrência(s)`;
                     if (ocorrencia.tipo === 'relacionamento') {
-                        switch(ocorrencia.quantidade) {
-                            case 0: quantidadeTexto = 'Bom (0 pts)'; break;
-                            case 1: quantidadeTexto = 'Mediano (1 pt)'; break;
-                            case 3: quantidadeTexto = 'Ruim (3 pts)'; break;
-                            default: quantidadeTexto = 'Relacionamento (Valor: ' + ocorrencia.quantidade + ')';
+                        // Para relacionamento, mostramos a qualidade em vez da quantidade
+                        switch(ocorrencia.qualidadeRelacionamento) {
+                            case 'bom': quantidadeTexto = 'Bom'; break;
+                            case 'mediano': quantidadeTexto = 'Mediano'; break;
+                            case 'ruim': quantidadeTexto = 'Ruim'; break;
+                            default: quantidadeTexto = 'Relacionamento';
                         }
                     }
                     
@@ -1563,6 +1571,7 @@
             }
         }
 
+        // CORREÇÃO: Função para calcular resultado com lógica corrigida para relacionamento
         function calcularResultadoLider() {
             const lider = document.getElementById('selectLiderResultado').value;
             const periodo = document.getElementById('periodoResultado').value;
@@ -1639,9 +1648,21 @@
                         pontosPerdidos = config.peso;
                     }
                 } else if (ocorrencia.tipo === 'relacionamento') {
-                    // Lógica específica para relacionamento
-                    // A quantidade registrada JÁ É a pontuação de perda (0, 1 ou 3)
-                    pontosPerdidos = ocorrencia.quantidade;
+                    // CORREÇÃO: Lógica específica para relacionamento
+                    // A qualidade é armazenada como texto, convertemos para pontos
+                    switch(ocorrencia.qualidadeRelacionamento) {
+                        case 'bom':
+                            pontosPerdidos = 0;
+                            break;
+                        case 'mediano':
+                            pontosPerdidos = 1;
+                            break;
+                        case 'ruim':
+                            pontosPerdidos = 3;
+                            break;
+                        default:
+                            pontosPerdidos = 0;
+                    }
                 } else {
                     // Lógica padrão para outros indicadores
                     if (ocorrencia.quantidade > config.limite) {
@@ -1650,15 +1671,8 @@
                 }
                 
                 // Atualizar resumo
-                // Para Relacionamento, a 'quantidade' é na verdade a pontuação,
-                // mas vamos somá-la aqui para mostrar o resumo.
-                if (ocorrencia.tipo === 'relacionamento') {
-                     // No resumo, vamos somar 1 ocorrência para 'relacionamento'
-                    resumoOcorrencias[ocorrencia.tipo].quantidade += 1;
-                } else {
-                    resumoOcorrencias[ocorrencia.tipo].quantidade += ocorrencia.quantidade;
-                }
-
+                // Para Relacionamento, a 'quantidade' é sempre 1 (uma avaliação)
+                resumoOcorrencias[ocorrencia.tipo].quantidade += 1;
                 resumoOcorrencias[ocorrencia.tipo].pontosPerdidos += pontosPerdidos;
                 
                 // Atualizar pontuação final
@@ -1668,12 +1682,7 @@
                 if (pontosPerdidos > 0) {
                     let mensagem = '';
                     if (ocorrencia.tipo === 'relacionamento') {
-                        let qualidade = '';
-                        switch(ocorrencia.quantidade) {
-                            case 1: qualidade = 'Mediano'; break;
-                            case 3: qualidade = 'Ruim'; break;
-                        }
-                        mensagem = `${config.nome} (${qualidade}): Perda de ${pontosPerdidos} pontos`;
+                        mensagem = `${config.nome} (${ocorrencia.qualidadeRelacionamento}): Perda de ${pontosPerdidos} pontos`;
                     } else {
                         mensagem = `${config.nome}: ${ocorrencia.quantidade} ocorrência(s) - Perda de ${pontosPerdidos} pontos`;
                     }
@@ -1722,10 +1731,6 @@
             Object.values(resumoOcorrencias).forEach(resumo => {
                 const linha = document.createElement('tr');
                 let quantidadeTexto = resumo.quantidade;
-                if (resumo.nome === 'Relacionamento com Supervisor') {
-                    // Para o resumo do relacionamento, a "quantidade" aqui é o número de vezes que foi avaliado,
-                    // mas o resumo detalhado já trata disso. Para simplicidade, deixaremos a contagem.
-                }
 
                 linha.innerHTML = `
                     <td>${resumo.nome}</td>
@@ -1773,6 +1778,7 @@
             });
         }
 
+        // CORREÇÃO: Função para gerar relatório diário com lógica corrigida
         function gerarRelatorioDiario() {
             const data = document.getElementById('dataRelatorioDiario').value;
             const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
@@ -1813,11 +1819,12 @@
 
                     let quantidadeTexto = oc.quantidade;
                     if (oc.tipo === 'relacionamento') {
-                        switch(oc.quantidade) {
-                            case 0: quantidadeTexto = 'Bom (0 pts)'; break;
-                            case 1: quantidadeTexto = 'Mediano (1 pt)'; break;
-                            case 3: quantidadeTexto = 'Ruim (3 pts)'; break;
-                            default: quantidadeTexto = 'Valor: ' + oc.quantidade;
+                        // CORREÇÃO: Para relacionamento, mostramos a qualidade
+                        switch(oc.qualidadeRelacionamento) {
+                            case 'bom': quantidadeTexto = 'Bom'; break;
+                            case 'mediano': quantidadeTexto = 'Mediano'; break;
+                            case 'ruim': quantidadeTexto = 'Ruim'; break;
+                            default: quantidadeTexto = 'Não especificado';
                         }
                     }
                     
@@ -1834,6 +1841,7 @@
             container.innerHTML = html;
         }
 
+        // CORREÇÃO: Função para gerar relatório mensal com lógica corrigida
         function gerarRelatorioMensal() {
             const mes = parseInt(document.getElementById('mesRelatorio').value);
             const ano = parseInt(document.getElementById('anoRelatorio').value);
@@ -1868,7 +1876,7 @@
                 }
                 
                 // Para relacionamento, contamos como 1 ocorrência para fins de resumo
-                resumoMensal[oc.lider][oc.tipo] += (oc.tipo === 'relacionamento') ? 1 : oc.quantidade;
+                resumoMensal[oc.lider][oc.tipo] += 1;
             });
             
             // Gerar relatório
@@ -1917,6 +1925,7 @@
             container.innerHTML = html;
         }
 
+        // CORREÇÃO: Função para gerar relatório anual com lógica corrigida
         function gerarRelatorioAnual() {
             const ano = parseInt(document.getElementById('anoRelatorioAnual').value);
             const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
@@ -1952,7 +1961,7 @@
                 }
                 
                 // Para relacionamento, contamos como 1 ocorrência para fins de resumo
-                resumoAnual[mes][oc.tipo] += (oc.tipo === 'relacionamento') ? 1 : oc.quantidade;
+                resumoAnual[mes][oc.tipo] += 1;
             });
             
             // Gerar relatório
