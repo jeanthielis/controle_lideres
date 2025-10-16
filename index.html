@@ -34,6 +34,13 @@
             --danger-color: #f44336;
             --info-color: #03a9f4;
             
+            /* Cores para pontuações */
+            --score-excellent: #4caf50;
+            --score-good: #8bc34a;
+            --score-regular: #ffc107;
+            --score-poor: #ff9800;
+            --score-critical: #f44336;
+            
             /* Sombras - Material Design */
             --shadow-1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
             --shadow-2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
@@ -433,6 +440,7 @@
             width: 100%;
             border-collapse: collapse;
             background-color: white;
+            min-width: 600px;
         }
 
         .table th {
@@ -457,97 +465,6 @@
             border-bottom: none;
         }
 
-        /* --- CONFIGURAÇÕES --- */
-        .config-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 0;
-            border-bottom: 1px solid var(--gray-200);
-        }
-
-        .config-item:last-child {
-            border-bottom: none;
-        }
-
-        .config-label {
-            font-weight: 500;
-            color: var(--gray-700);
-        }
-
-        .config-input {
-            width: 80px;
-            text-align: center;
-            padding: 8px 12px;
-            border: 1px solid var(--gray-300);
-            border-radius: var(--border-radius-sm);
-        }
-
-        .config-section {
-            margin-bottom: 32px;
-        }
-
-        .config-section-title {
-            font-size: 18px;
-            font-weight: 500;
-            color: var(--gray-800);
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--gray-300);
-        }
-
-        /* --- CARDS DE COMPARATIVO --- */
-        .cards-comparativo {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-
-        .card-lider {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 20px;
-            box-shadow: var(--shadow-1);
-            transition: var(--transition);
-            border-top: 4px solid var(--primary-color);
-        }
-
-        .card-lider:hover {
-            box-shadow: var(--shadow-2);
-            transform: translateY(-2px);
-        }
-
-        .card-lider .nome {
-            font-weight: 500;
-            font-size: 16px;
-            margin-bottom: 12px;
-            color: var(--gray-800);
-        }
-
-        .card-lider .pontuacao {
-            font-size: 32px;
-            font-weight: 700;
-            text-align: center;
-            margin: 12px 0;
-        }
-
-        .card-lider .estatisticas {
-            font-size: 14px;
-            color: var(--gray-600);
-        }
-
-        .card-lider .destaque {
-            background: var(--success-color);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 16px;
-            font-size: 12px;
-            margin-top: 12px;
-            text-align: center;
-            font-weight: 500;
-        }
-
         /* --- GRÁFICOS --- */
         .chart-container {
             position: relative;
@@ -563,23 +480,111 @@
             margin: 20px 0;
         }
 
-        /* --- FILTROS --- */
-        .filtros-relatorio {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .filtro-group {
+        /* --- LEGENDA DE PONTUAÇÕES --- */
+        .score-legend {
             display: flex;
-            flex-direction: column;
+            justify-content: center;
+            gap: 16px;
+            margin: 20px 0;
+            flex-wrap: wrap;
         }
 
-        .filtro-group label {
+        .score-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: var(--border-radius-sm);
+            font-size: 14px;
             font-weight: 500;
-            margin-bottom: 8px;
-            color: var(--gray-700);
+        }
+
+        .score-legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 2px solid rgba(0,0,0,0.1);
+        }
+
+        .score-excellent { background-color: var(--score-excellent); color: white; }
+        .score-good { background-color: var(--score-good); color: white; }
+        .score-regular { background-color: var(--score-regular); color: var(--gray-900); }
+        .score-poor { background-color: var(--score-poor); color: white; }
+        .score-critical { background-color: var(--score-critical); color: white; }
+
+        /* --- CARDS DE LÍDERES --- */
+        .leaders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .leader-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow-1);
+            border-left: 4px solid var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .leader-card:hover {
+            box-shadow: var(--shadow-2);
+            transform: translateY(-2px);
+        }
+
+        .leader-card.excellent { border-left-color: var(--score-excellent); }
+        .leader-card.good { border-left-color: var(--score-good); }
+        .leader-card.regular { border-left-color: var(--score-regular); }
+        .leader-card.poor { border-left-color: var(--score-poor); }
+        .leader-card.critical { border-left-color: var(--score-critical); }
+
+        .leader-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .leader-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .leader-score {
+            font-size: 24px;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: var(--border-radius-sm);
+            color: white;
+        }
+
+        .leader-score.excellent { background-color: var(--score-excellent); }
+        .leader-score.good { background-color: var(--score-good); }
+        .leader-score.regular { background-color: var(--score-regular); }
+        .leader-score.poor { background-color: var(--score-poor); }
+        .leader-score.critical { background-color: var(--score-critical); }
+
+        .leader-details {
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+
+        .leader-details div {
+            margin-bottom: 4px;
+        }
+
+        .leader-ranking {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
         }
 
         /* --- MODAL --- */
@@ -612,54 +617,32 @@
             to { opacity: 1; transform: scale(1); }
         }
 
-        .modal-title {
-            font-size: 20px;
-            font-weight: 500;
-            margin-bottom: 16px;
-            color: var(--gray-800);
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
         }
 
-        .modal-message {
-            margin-bottom: 24px;
-            color: var(--gray-700);
-            line-height: 1.5;
+        .filtros-relatorio {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
         }
 
-        .modal-buttons {
+        .filtro-group {
             display: flex;
-            justify-content: flex-end;
-            gap: 12px;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        /* --- LISTAS --- */
-        .list {
-            list-style-type: none;
-        }
-
-        .list-item {
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--gray-200);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .list-item:last-child {
-            border-bottom: none;
-        }
-
-        .list-item:hover {
-            background-color: var(--gray-50);
-        }
-
-        /* --- OCORRÊNCIAS --- */
         .ocorrencia-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 16px;
+            padding: 16px;
             border-bottom: 1px solid var(--gray-200);
-            background-color: white;
+            background: white;
         }
 
         .ocorrencia-item:last-child {
@@ -671,52 +654,18 @@
         }
 
         .ocorrencia-data {
-            font-weight: 500;
-            color: var(--gray-700);
+            font-size: 14px;
+            color: var(--gray-600);
+            margin-bottom: 4px;
         }
 
         .ocorrencia-detalhes {
-            font-size: 14px;
-            color: var(--gray-600);
-            margin-top: 4px;
+            font-size: 16px;
         }
 
         .ocorrencia-acoes {
             display: flex;
             gap: 8px;
-        }
-
-        .ocorrencia-form {
-            background-color: var(--gray-50);
-            padding: 16px;
-            border-radius: var(--border-radius);
-            margin-bottom: 20px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* --- ACESSIBILIDADE --- */
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
         }
 
         .skip-link {
@@ -726,94 +675,35 @@
             background: var(--primary-color);
             color: white;
             padding: 8px;
-            z-index: 100;
             text-decoration: none;
-            border-radius: 0 0 var(--border-radius-sm) var(--border-radius-sm);
-            font-weight: 500;
+            border-radius: var(--border-radius-sm);
+            z-index: 1000;
         }
 
         .skip-link:focus {
-            top: 0;
+            top: 6px;
         }
 
-        /* --- LOADING --- */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top: 3px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 20px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .modal-title {
+            margin-bottom: 16px;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        /* --- RESPONSIVIDADE --- */
-        @media (max-width: 768px) {
-            .main-content {
-                padding: 16px;
-            }
-            
-            .tab-button {
-                min-width: auto;
-                font-size: 12px;
-                padding: 12px 8px;
-            }
-            
-            #pontuacaoFinal {
-                font-size: 48px;
-            }
-            
-            .btn-group {
-                flex-direction: column;
-            }
-            
-            .config-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-            }
-            
-            .config-input {
-                width: 100%;
-            }
-
-            .filtros-relatorio {
-                grid-template-columns: 1fr;
-            }
-
-            .cards-comparativo {
-                grid-template-columns: 1fr;
-            }
-            
-            .header-content {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .card-body {
-                padding: 16px;
-            }
-            
-            .tab-button {
-                font-size: 11px;
-                padding: 10px 6px;
-            }
-            
-            .logo-text {
-                font-size: 18px;
-            }
-            
-            .score-display {
-                padding: 20px 16px;
-            }
+        .modal-message {
+            margin-bottom: 20px;
+            color: var(--gray-700);
         }
     </style>
 </head>
@@ -858,16 +748,21 @@
                                     <i class="fas fa-chart-line"></i>
                                     Resultado
                                 </button>
+                                <button type="button" class="tab-button" role="tab" aria-selected="false" aria-controls="comparativo" onclick="openTab(event, 'comparativo')">
+                                    <i class="fas fa-chart-bar"></i>
+                                    Comparativo
+                                </button>
                                 <button type="button" class="tab-button" role="tab" aria-selected="false" aria-controls="historico" onclick="openTab(event, 'historico')">
                                     <i class="fas fa-history"></i>
                                     Histórico
                                 </button>
                                 <button type="button" class="tab-button" role="tab" aria-selected="false" aria-controls="relatorios" onclick="openTab(event, 'relatorios')">
-                                    <i class="fas fa-chart-bar"></i>
+                                    <i class="fas fa-file-alt"></i>
                                     Relatórios
                                 </button>
                             </div>
 
+                            <!-- Aba Ocorrências -->
                             <div id="ocorrencias" class="tab-content active" role="tabpanel" aria-labelledby="ocorrencias-tab">
                                 <h2 class="indicador-title">
                                     <i class="fas fa-clipboard-list"></i>
@@ -937,9 +832,11 @@
                                 </h3>
                                 
                                 <div id="listaOcorrenciasHoje" class="list">
-                                    </div>
+                                    <!-- Ocorrências serão carregadas aqui -->
+                                </div>
                             </div>
 
+                            <!-- Aba Resultado -->
                             <div id="resultado" class="tab-content" role="tabpanel" aria-labelledby="resultado-tab">
                                 <h2 class="indicador-title">
                                     <i class="fas fa-chart-line"></i>
@@ -1000,7 +897,105 @@
                                     <p>Selecione um líder para visualizar o resultado da avaliação</p>
                                 </div>
                             </div>
-                            
+
+                            <!-- NOVA ABA: COMPARATIVO ENTRE LÍDERES -->
+                            <div id="comparativo" class="tab-content" role="tabpanel" aria-labelledby="comparativo-tab">
+                                <h2 class="indicador-title">
+                                    <i class="fas fa-chart-bar"></i>
+                                    Comparativo entre Líderes
+                                </h2>
+                                
+                                <!-- Legenda de Pontuações -->
+                                <div class="score-legend">
+                                    <div class="score-legend-item score-excellent">
+                                        <div class="score-legend-color score-excellent"></div>
+                                        <span>Excelente (90-100)</span>
+                                    </div>
+                                    <div class="score-legend-item score-good">
+                                        <div class="score-legend-color score-good"></div>
+                                        <span>Bom (80-89)</span>
+                                    </div>
+                                    <div class="score-legend-item score-regular">
+                                        <div class="score-legend-color score-regular"></div>
+                                        <span>Regular (70-79)</span>
+                                    </div>
+                                    <div class="score-legend-item score-poor">
+                                        <div class="score-legend-color score-poor"></div>
+                                        <span>Ruim (60-69)</span>
+                                    </div>
+                                    <div class="score-legend-item score-critical">
+                                        <div class="score-legend-color score-critical"></div>
+                                        <span>Crítico (0-59)</span>
+                                    </div>
+                                </div>
+
+                                <!-- Filtros -->
+                                <div class="filtros-relatorio">
+                                    <div class="filtro-group">
+                                        <label for="periodoComparativo" class="form-label">Período de Análise</label>
+                                        <select id="periodoComparativo" class="form-control" onchange="gerarComparativoLideres()">
+                                            <option value="hoje">Hoje</option>
+                                            <option value="semana">Esta Semana</option>
+                                            <option value="mes">Este Mês</option>
+                                            <option value="todos" selected>Todo o Período</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="filtro-group">
+                                        <label for="ordenacaoComparativo" class="form-label">Ordenar por</label>
+                                        <select id="ordenacaoComparativo" class="form-control" onchange="gerarComparativoLideres()">
+                                            <option value="pontuacao">Pontuação (Maior-Menor)</option>
+                                            <option value="nome">Nome (A-Z)</option>
+                                            <option value="ocorrencias">Ocorrências (Menor-Maior)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Cards dos Líderes -->
+                                <div id="comparativoContainer">
+                                    <div class="leaders-grid" id="leadersGrid">
+                                        <!-- Os cards dos líderes serão gerados aqui -->
+                                    </div>
+                                    
+                                    <div id="semDadosComparativo" style="text-align: center; padding: 40px; color: var(--gray-500);">
+                                        <i class="fas fa-users" style="font-size: 48px; margin-bottom: 16px;"></i>
+                                        <p>Nenhum líder cadastrado ou dados disponíveis para comparação</p>
+                                    </div>
+                                </div>
+
+                                <!-- Gráfico Comparativo -->
+                                <h3 class="indicador-title">
+                                    <i class="fas fa-chart-bar"></i>
+                                    Gráfico Comparativo de Pontuações
+                                </h3>
+                                <div class="chart-container-comparativo">
+                                    <canvas id="graficoComparativo"></canvas>
+                                </div>
+
+                                <!-- Tabela Comparativa -->
+                                <h3 class="indicador-title">
+                                    <i class="fas fa-table"></i>
+                                    Tabela Comparativa Detalhada
+                                </h3>
+                                <div class="table-container">
+                                    <table class="table" id="tabelaComparativa">
+                                        <thead>
+                                            <tr>
+                                                <th>Posição</th>
+                                                <th>Líder</th>
+                                                <th>Pontuação</th>
+                                                <th>Classificação</th>
+                                                <th>Total Ocorrências</th>
+                                                <th>Principais Ocorrências</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tabelaComparativaBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Aba Histórico -->
                             <div id="historico" class="tab-content" role="tabpanel" aria-labelledby="historico-tab">
                                 <h2 class="indicador-title">
                                     <i class="fas fa-history"></i>
@@ -1010,14 +1005,14 @@
                                 <div class="filtros-relatorio">
                                     <div class="filtro-group">
                                         <label for="filtroLiderHistorico">Filtrar por Líder</label>
-                                        <select id="filtroLiderHistorico" class="form-control" onchange="carregarHistorico()">
+                                        <select id="filtroLiderHistorico" class="form-control" onchange="carregarHistorico(); gerarGraficoTendencia()">
                                             <option value="todos">Todos os Líderes</option>
                                         </select>
                                     </div>
                                     
                                     <div class="filtro-group">
                                         <label for="filtroDataHistorico">Filtrar por Período</label>
-                                        <select id="filtroDataHistorico" class="form-control" onchange="carregarHistorico()">
+                                        <select id="filtroDataHistorico" class="form-control" onchange="carregarHistorico(); gerarGraficoTendencia()">
                                             <option value="7">Últimos 7 dias</option>
                                             <option value="30">Últimos 30 dias</option>
                                             <option value="90">Últimos 90 dias</option>
@@ -1042,10 +1037,25 @@
                                     </div>
                                 </div>
                                 
+                                <h3 class="indicador-title">
+                                    <i class="fas fa-chart-line"></i>
+                                    Gráfico de Tendência (Pontuação Média Mensal)
+                                </h3>
+                                <div class="chart-container-comparativo">
+                                    <canvas id="graficoTendencia"></canvas>
+                                </div>
+                                
+                                <h3 class="indicador-title">
+                                    <i class="fas fa-table"></i>
+                                    Lista de Ocorrências
+                                </h3>
+                                
                                 <div id="listaHistorico" class="list">
-                                    </div>
+                                    <!-- Histórico será carregado aqui -->
+                                </div>
                             </div>
 
+                            <!-- Aba Relatórios -->
                             <div id="relatorios" class="tab-content" role="tabpanel" aria-labelledby="relatorios-tab">
                                 <h2 class="indicador-title">
                                     <i class="fas fa-chart-bar"></i>
@@ -1061,7 +1071,8 @@
                                     </div>
                                     
                                     <div id="relatorioDiarioContainer">
-                                        </div>
+                                        <!-- Relatório diário será gerado aqui -->
+                                    </div>
                                 </div>
                                 
                                 <div class="indicador-group">
@@ -1089,12 +1100,14 @@
                                         <div class="form-group">
                                             <label for="anoRelatorio" class="form-label">Ano</label>
                                             <select id="anoRelatorio" class="form-control" onchange="gerarRelatorioMensal()">
-                                                </select>
+                                                <!-- Anos serão preenchidos dinamicamente -->
+                                            </select>
                                         </div>
                                     </div>
                                     
                                     <div id="relatorioMensalContainer">
-                                        </div>
+                                        <!-- Relatório mensal será gerado aqui -->
+                                    </div>
                                 </div>
                                 
                                 <div class="indicador-group">
@@ -1103,11 +1116,13 @@
                                     <div class="form-group">
                                         <label for="anoRelatorioAnual" class="form-label">Ano</label>
                                         <select id="anoRelatorioAnual" class="form-control" onchange="gerarRelatorioAnual()">
-                                            </select>
+                                            <!-- Anos serão preenchidos dinamicamente -->
+                                        </select>
                                     </div>
                                     
                                     <div id="relatorioAnualContainer">
-                                        </div>
+                                        <!-- Relatório anual será gerado aqui -->
+                                    </div>
                                 </div>
                                 
                                 <div class="btn-group">
@@ -1120,6 +1135,25 @@
                                         Exportar para Excel
                                     </button>
                                 </div>
+                                
+                                <div class="indicador-group" style="margin-top: 20px;">
+                                    <h3 class="indicador-title">
+                                        <i class="fas fa-database"></i>
+                                        Backup e Restauração de Dados
+                                    </h3>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-outline" onclick="fazerBackup()">
+                                            <i class="fas fa-download"></i> Fazer Backup (JSON)
+                                        </button>
+                                        <label for="restaurarInput" class="btn btn-outline">
+                                            <i class="fas fa-upload"></i> Restaurar Dados
+                                        </label>
+                                        <input type="file" id="restaurarInput" accept=".json" style="display: none;" onchange="restaurarDados(event)">
+                                        <button type="button" class="btn btn-danger" onclick="mostrarModalConfirmacao()">
+                                            <i class="fas fa-eraser"></i> Limpar Tudo
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -1128,6 +1162,7 @@
         </main>
     </div>
     
+    <!-- Modal Cadastro Líder -->
     <div id="modalCadastroLider" class="modal" role="dialog" aria-labelledby="modalCadastroTitle">
         <div class="modal-content">
             <h2 id="modalCadastroTitle" class="modal-title">
@@ -1137,7 +1172,7 @@
             <div class="form-group">
                 <label for="inputNovoLiderModal" class="form-label">Nome do Líder</label>
                 <input type="text" id="inputNovoLiderModal" class="form-control" placeholder="Digite o nome do líder">
-                <div id="novoLiderModal-help" class="error-message" style="display: none;"></div>
+                <div id="inputNovoLiderModal-help" class="error-message" style="display: none;"></div>
             </div>
             <div class="modal-buttons">
                 <button type="button" class="btn btn-outline" onclick="fecharModalCadastro()">Cancelar</button>
@@ -1146,6 +1181,7 @@
         </div>
     </div>
     
+    <!-- Modal Confirmação -->
     <div id="modalConfirmacao" class="modal" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalMessage">
         <div class="modal-content">
             <h2 id="modalTitle" class="modal-title">Confirmação</h2>
@@ -1157,7 +1193,17 @@
         </div>
     </div>
 
+    <!-- Toast Notification -->
+    <div id="toastNotification" style="position: fixed; bottom: 20px; right: 20px; background-color: var(--success-color); color: white; padding: 10px 20px; border-radius: var(--border-radius); box-shadow: var(--shadow-2); display: none; z-index: 1001; transition: opacity 0.3s;">
+        Mensagem de Notificação
+    </div>
+
     <script>
+        // Variáveis globais
+        let chartTendencia = null;
+        let chartComparativo = null;
+        let relatorioAtivo = { tipo: 'diario', data: new Date().toISOString().split('T')[0] };
+
         // Inicialização do sistema
         document.addEventListener('DOMContentLoaded', function() {
             inicializarSistema();
@@ -1181,11 +1227,13 @@
             gerarRelatorioDiario();
             gerarRelatorioMensal();
             gerarRelatorioAnual();
+            
+            // Gerar comparativo inicial
+            gerarComparativoLideres();
         });
 
         // Funções principais do sistema
         function inicializarSistema() {
-            // Verificar se existem dados salvos
             if (!localStorage.getItem('lideres')) {
                 localStorage.setItem('lideres', JSON.stringify([]));
             }
@@ -1213,7 +1261,6 @@
         function carregarLideres() {
             const lideres = JSON.parse(localStorage.getItem('lideres'));
             
-            // Atualizar todos os selects de líderes
             const selects = [
                 'selectLiderOcorrencia',
                 'selectLiderResultado', 
@@ -1270,11 +1317,9 @@
             fecharModalCadastro();
             carregarLideres();
             
-            // Feedback visual
-            alert(`Líder "${nomeLider}" cadastrado com sucesso!`);
+            mostrarToast(`Líder "${nomeLider}" cadastrado com sucesso!`, 'success');
         }
 
-        // CORREÇÃO: Função para alternar o campo de quantidade com o campo de qualidade do relacionamento
         function toggleQuantidadeField() {
             const tipo = document.getElementById('tipoOcorrencia').value;
             const inputQuantidade = document.getElementById('quantidadeOcorrencia');
@@ -1282,7 +1327,6 @@
             const labelQuantidade = document.getElementById('labelQuantidade');
 
             if (tipo === 'relacionamento') {
-                // Mostrar select especial para qualidade
                 inputQuantidade.style.display = 'none';
                 inputQuantidade.required = false;
                 inputQuantidade.disabled = true; 
@@ -1293,7 +1337,6 @@
                 
                 labelQuantidade.textContent = 'Qualidade do Relacionamento';
             } else {
-                // Mostrar input padrão de quantidade
                 inputQuantidade.style.display = 'block';
                 inputQuantidade.required = true;
                 inputQuantidade.disabled = false;
@@ -1306,7 +1349,6 @@
             }
         }
         
-        // CORREÇÃO: Função para registrar ocorrência com lógica corrigida para relacionamento
         function registrarOcorrencia() {
             const lider = document.getElementById('selectLiderOcorrencia').value;
             const data = document.getElementById('dataOcorrencia').value;
@@ -1316,95 +1358,73 @@
             let quantidade;
             let qualidadeRelacionamento = null;
             
-            // Determinar o valor da quantidade com base no tipo de ocorrência
             if (tipo === 'relacionamento') {
                 const selectQualidade = document.getElementById('selectQualidadeRelacionamento');
                 if (!selectQualidade.value) {
-                    alert('Por favor, selecione a qualidade do relacionamento.');
+                    mostrarToast('Por favor, selecione a qualidade do relacionamento.', 'warning');
                     return;
                 }
-                // Armazenamos a qualidade como texto e a quantidade será calculada posteriormente
                 qualidadeRelacionamento = selectQualidade.value;
-                quantidade = 1; // Para relacionamento, sempre contamos como 1 ocorrência
+                quantidade = 1;
             } else {
-                // Para todos os outros tipos, usa o input padrão
                 quantidade = parseInt(document.getElementById('quantidadeOcorrencia').value);
             }
             
-            // Validações
             if (!lider) {
-                alert('Por favor, selecione um líder.');
+                mostrarToast('Por favor, selecione um líder.', 'warning');
                 return;
             }
             
             if (!data) {
-                alert('Por favor, selecione uma data.');
+                mostrarToast('Por favor, selecione uma data.', 'warning');
                 return;
             }
             
             if (!tipo) {
-                alert('Por favor, selecione um tipo de ocorrência.');
+                mostrarToast('Por favor, selecione um tipo de ocorrência.', 'warning');
                 return;
             }
             
-            // Validação de quantidade (para input padrão)
             if (tipo !== 'relacionamento' && (isNaN(quantidade) || quantidade < 0)) {
-                alert('Por favor, insira uma quantidade válida (igual ou superior a zero).');
+                mostrarToast('Por favor, insira uma quantidade válida (igual ou superior a zero).', 'warning');
                 return;
             }
             
-            // Criar objeto de ocorrência
             const ocorrencia = {
                 id: Date.now().toString(),
                 lider: lider,
                 data: data,
                 tipo: tipo,
                 quantidade: quantidade,
-                qualidadeRelacionamento: qualidadeRelacionamento, // Nova propriedade para armazenar a qualidade
+                qualidadeRelacionamento: qualidadeRelacionamento,
                 descricao: descricao,
                 dataRegistro: new Date().toISOString()
             };
             
-            // Salvar ocorrência
             const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
             ocorrencias.push(ocorrencia);
             localStorage.setItem('ocorrencias', JSON.stringify(ocorrencias));
             
-            // Limpar formulário
             document.getElementById('descricaoOcorrencia').value = '';
             
-            // Resetar campo de quantidade/qualidade
             if (tipo === 'relacionamento') {
                 document.getElementById('selectQualidadeRelacionamento').value = '';
             } else {
                 document.getElementById('quantidadeOcorrencia').value = 1;
             }
             
-            // Recarregar listas
             carregarOcorrenciasHoje();
             carregarHistorico();
+            preencherAnosRelatorios();
             
-            // Feedback visual
-            const btn = document.querySelector('#ocorrencias .btn-primary');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-check"></i> Ocorrência Registrada!';
-            btn.classList.add('btn-success');
-            
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.classList.remove('btn-success');
-            }, 2000);
+            mostrarToast('Ocorrência registrada com sucesso!', 'success');
         }
 
-        // CORREÇÃO: Função para carregar ocorrências de hoje com lógica corrigida
         function carregarOcorrenciasHoje() {
             const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
             const listaOcorrenciasHoje = document.getElementById('listaOcorrenciasHoje');
             
-            // Data de hoje
             const hoje = new Date().toISOString().split('T')[0];
-            
-            // Filtrar ocorrências de hoje
             const ocorrenciasHoje = ocorrencias.filter(oc => oc.data === hoje);
             
             listaOcorrenciasHoje.innerHTML = '';
@@ -1419,15 +1439,12 @@
                 return;
             }
             
-            // Adicionar ocorrências à lista
             ocorrenciasHoje.forEach(ocorrencia => {
                 const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
                 const config = configuracoes[ocorrencia.tipo];
                 
-                // Texto descritivo para o campo Quantidade/Qualidade
                 let quantidadeTexto = `${ocorrencia.quantidade} ocorrência(s)`;
                 if (ocorrencia.tipo === 'relacionamento') {
-                    // Para relacionamento, mostramos a qualidade em vez da quantidade
                     switch(ocorrencia.qualidadeRelacionamento) {
                         case 'bom': quantidadeTexto = 'Bom'; break;
                         case 'mediano': quantidadeTexto = 'Mediano'; break;
@@ -1458,7 +1475,6 @@
             });
         }
 
-        // CORREÇÃO: Função para carregar histórico com lógica corrigida
         function carregarHistorico() {
             const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
             const listaHistorico = document.getElementById('listaHistorico');
@@ -1468,7 +1484,6 @@
             
             listaHistorico.innerHTML = '';
             
-            // Aplicar filtros
             let ocorrenciasFiltradas = ocorrencias;
             
             if (filtroLider !== 'todos') {
@@ -1490,7 +1505,6 @@
                 ocorrenciasFiltradas = ocorrenciasFiltradas.filter(oc => oc.tipo === filtroTipo);
             }
             
-            // Ordenar por data (mais recente primeiro)
             ocorrenciasFiltradas.sort((a, b) => new Date(b.data) - new Date(a.data));
             
             if (ocorrenciasFiltradas.length === 0) {
@@ -1503,7 +1517,6 @@
                 return;
             }
             
-            // Agrupar por data
             const ocorrenciasPorData = {};
             ocorrenciasFiltradas.forEach(ocorrencia => {
                 if (!ocorrenciasPorData[ocorrencia.data]) {
@@ -1512,24 +1525,19 @@
                 ocorrenciasPorData[ocorrencia.data].push(ocorrencia);
             });
             
-            // Adicionar ocorrências à lista
             Object.keys(ocorrenciasPorData).sort().reverse().forEach(data => {
-                // Cabeçalho da data
                 const header = document.createElement('div');
                 header.className = 'indicador-title';
                 header.style.marginTop = '20px';
                 header.innerHTML = `<i class="fas fa-calendar-day"></i> ${formatarData(data)}`;
                 listaHistorico.appendChild(header);
                 
-                // Ocorrências da data
                 ocorrenciasPorData[data].forEach(ocorrencia => {
                     const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
                     const config = configuracoes[ocorrencia.tipo];
 
-                    // Texto descritivo para o campo Quantidade/Qualidade
                     let quantidadeTexto = `${ocorrencia.quantidade} ocorrência(s)`;
                     if (ocorrencia.tipo === 'relacionamento') {
-                        // Para relacionamento, mostramos a qualidade em vez da quantidade
                         switch(ocorrencia.qualidadeRelacionamento) {
                             case 'bom': quantidadeTexto = 'Bom'; break;
                             case 'mediano': quantidadeTexto = 'Mediano'; break;
@@ -1559,6 +1567,8 @@
                     listaHistorico.appendChild(item);
                 });
             });
+            
+            gerarGraficoTendencia();
         }
 
         function excluirOcorrencia(id) {
@@ -1568,10 +1578,10 @@
                 localStorage.setItem('ocorrencias', JSON.stringify(ocorrenciasFiltradas));
                 carregarOcorrenciasHoje();
                 carregarHistorico();
+                mostrarToast('Ocorrência excluída.', 'danger');
             }
         }
 
-        // CORREÇÃO: Função para calcular resultado com lógica corrigida para relacionamento
         function calcularResultadoLider() {
             const lider = document.getElementById('selectLiderResultado').value;
             const periodo = document.getElementById('periodoResultado').value;
@@ -1585,7 +1595,6 @@
             const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
             const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
             
-            // Filtrar ocorrências do líder por período
             let ocorrenciasLider = ocorrencias.filter(oc => oc.lider === lider);
             
             if (periodo !== 'todos') {
@@ -1606,9 +1615,11 @@
                         break;
                 }
                 
+                dataInicio.setHours(0, 0, 0, 0); 
+                
                 ocorrenciasLider = ocorrenciasLider.filter(oc => {
                     const dataOcorrencia = new Date(oc.data);
-                    return dataOcorrencia >= dataInicio;
+                    return dataOcorrencia.getTime() >= dataInicio.getTime();
                 });
             }
             
@@ -1622,7 +1633,6 @@
                 return;
             }
             
-            // Calcular pontuação
             let pontuacaoFinal = 100;
             const resumoOcorrencias = {};
             const feedback = [];
@@ -1630,7 +1640,6 @@
             ocorrenciasLider.forEach(ocorrencia => {
                 const config = configuracoes[ocorrencia.tipo];
                 
-                // Inicializar resumo se necessário
                 if (!resumoOcorrencias[ocorrencia.tipo]) {
                     resumoOcorrencias[ocorrencia.tipo] = {
                         nome: config.nome,
@@ -1639,50 +1648,41 @@
                     };
                 }
                 
-                // Calcular pontos perdidos
                 let pontosPerdidos = 0;
                 
                 if (ocorrencia.tipo === 'notaLimpeza') {
-                    // Lógica específica para nota de limpeza
                     if (ocorrencia.quantidade < config.meta) {
                         pontosPerdidos = config.peso;
                     }
                 } else if (ocorrencia.tipo === 'relacionamento') {
-                    // CORREÇÃO: Lógica específica para relacionamento
-                    // A qualidade é armazenada como texto, convertemos para pontos
                     switch(ocorrencia.qualidadeRelacionamento) {
                         case 'bom':
                             pontosPerdidos = 0;
                             break;
                         case 'mediano':
-                            pontosPerdidos = 1;
+                            pontosPerdidos = config.peso * 0.5;
                             break;
                         case 'ruim':
-                            pontosPerdidos = 3;
+                            pontosPerdidos = config.peso;
                             break;
                         default:
                             pontosPerdidos = 0;
                     }
                 } else {
-                    // Lógica padrão para outros indicadores
                     if (ocorrencia.quantidade > config.limite) {
                         pontosPerdidos = config.peso * (ocorrencia.quantidade - config.limite);
                     }
                 }
                 
-                // Atualizar resumo
-                // Para Relacionamento, a 'quantidade' é sempre 1 (uma avaliação)
                 resumoOcorrencias[ocorrencia.tipo].quantidade += 1;
                 resumoOcorrencias[ocorrencia.tipo].pontosPerdidos += pontosPerdidos;
                 
-                // Atualizar pontuação final
                 pontuacaoFinal -= pontosPerdidos;
                 
-                // Adicionar ao feedback se houver perda de pontos
                 if (pontosPerdidos > 0) {
                     let mensagem = '';
                     if (ocorrencia.tipo === 'relacionamento') {
-                        mensagem = `${config.nome} (${ocorrencia.qualidadeRelacionamento}): Perda de ${pontosPerdidos} pontos`;
+                        mensagem = `${config.nome} (${ocorrencia.qualidadeRelacionamento.toUpperCase()}): Perda de ${pontosPerdidos} pontos`;
                     } else {
                         mensagem = `${config.nome}: ${ocorrencia.quantidade} ocorrência(s) - Perda de ${pontosPerdidos} pontos`;
                     }
@@ -1694,22 +1694,19 @@
                 }
             });
             
-            // Garantir que a pontuação não seja negativa
             pontuacaoFinal = Math.max(0, pontuacaoFinal);
             
-            // Exibir resultado
             document.getElementById('pontuacaoFinal').textContent = Math.round(pontuacaoFinal);
             
             let periodoTexto = '';
             switch(periodo) {
                 case 'hoje': periodoTexto = 'Hoje'; break;
-                case 'semana': periodoTexto = 'Esta Semana'; break;
-                case 'mes': periodoTexto = 'Este Mês'; break;
+                case 'semana': periodoTexto = 'Últimos 7 dias'; break;
+                case 'mes': periodoTexto = 'Últimos 30 dias'; break;
                 case 'todos': periodoTexto = 'Todo o Período'; break;
             }
             document.getElementById('periodoAvaliacao').textContent = `Período: ${periodoTexto}`;
             
-            // Exibir feedback detalhado
             const feedbackContainer = document.getElementById('feedbackDetalhado');
             feedbackContainer.innerHTML = '';
             
@@ -1724,7 +1721,6 @@
                 });
             }
             
-            // Exibir resumo das ocorrências
             const tabelaResumo = document.getElementById('tabelaResumoOcorrencias').querySelector('tbody');
             tabelaResumo.innerHTML = '';
             
@@ -1740,30 +1736,292 @@
                 tabelaResumo.appendChild(linha);
             });
             
-            // Mostrar container de resultado
             document.getElementById('resultadoContainer').style.display = 'block';
             document.getElementById('semDadosResultado').style.display = 'none';
+            
+            if (pontuacaoFinal === 100) {
+                 mostrarToast(`Parabéns! ${lider} alcançou a pontuação máxima (100) no período!`, 'success');
+            }
+        }
+
+        // FUNÇÃO NOVA: Comparativo entre Líderes
+        function gerarComparativoLideres() {
+            const periodo = document.getElementById('periodoComparativo').value;
+            const ordenacao = document.getElementById('ordenacaoComparativo').value;
+            const lideres = JSON.parse(localStorage.getItem('lideres'));
+            const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
+            const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
+
+            if (lideres.length === 0) {
+                document.getElementById('leadersGrid').innerHTML = '';
+                document.getElementById('semDadosComparativo').style.display = 'block';
+                document.getElementById('tabelaComparativaBody').innerHTML = '';
+                return;
+            }
+
+            const dadosLideres = lideres.map(lider => {
+                let ocorrenciasLider = ocorrencias.filter(oc => oc.lider === lider);
+                
+                if (periodo !== 'todos') {
+                    const hoje = new Date();
+                    let dataInicio;
+                    
+                    switch(periodo) {
+                        case 'hoje':
+                            dataInicio = new Date(hoje.toISOString().split('T')[0]);
+                            break;
+                        case 'semana':
+                            dataInicio = new Date(hoje);
+                            dataInicio.setDate(hoje.getDate() - 7);
+                            break;
+                        case 'mes':
+                            dataInicio = new Date(hoje);
+                            dataInicio.setMonth(hoje.getMonth() - 1);
+                            break;
+                    }
+                    
+                    dataInicio.setHours(0, 0, 0, 0);
+                    ocorrenciasLider = ocorrenciasLider.filter(oc => {
+                        const dataOcorrencia = new Date(oc.data);
+                        return dataOcorrencia.getTime() >= dataInicio.getTime();
+                    });
+                }
+                
+                let pontuacao = 100;
+                const resumoOcorrencias = {};
+                let totalOcorrencias = 0;
+                
+                ocorrenciasLider.forEach(ocorrencia => {
+                    const config = configuracoes[ocorrencia.tipo];
+                    let pontosPerdidos = 0;
+                    
+                    if (ocorrencia.tipo === 'notaLimpeza') {
+                        if (ocorrencia.quantidade < config.meta) {
+                            pontosPerdidos = config.peso;
+                        }
+                    } else if (ocorrencia.tipo === 'relacionamento') {
+                        switch(ocorrencia.qualidadeRelacionamento) {
+                            case 'mediano': pontosPerdidos = config.peso * 0.5; break;
+                            case 'ruim': pontosPerdidos = config.peso; break;
+                        }
+                    } else {
+                        if (ocorrencia.quantidade > config.limite) {
+                            pontosPerdidos = config.peso * (ocorrencia.quantidade - config.limite);
+                        }
+                    }
+                    
+                    pontuacao -= pontosPerdidos;
+                    totalOcorrencias += ocorrencia.quantidade;
+                    
+                    if (!resumoOcorrencias[ocorrencia.tipo]) {
+                        resumoOcorrencias[ocorrencia.tipo] = 0;
+                    }
+                    resumoOcorrencias[ocorrencia.tipo] += ocorrencia.quantidade;
+                });
+                
+                pontuacao = Math.max(0, Math.round(pontuacao));
+                
+                let classificacao = 'critical';
+                let classeCSS = 'critical';
+                
+                if (pontuacao >= 90) {
+                    classificacao = 'Excelente';
+                    classeCSS = 'excellent';
+                } else if (pontuacao >= 80) {
+                    classificacao = 'Bom';
+                    classeCSS = 'good';
+                } else if (pontuacao >= 70) {
+                    classificacao = 'Regular';
+                    classeCSS = 'regular';
+                } else if (pontuacao >= 60) {
+                    classificacao = 'Ruim';
+                    classeCSS = 'poor';
+                } else {
+                    classificacao = 'Crítico';
+                    classeCSS = 'critical';
+                }
+                
+                const principaisOcorrencias = Object.entries(resumoOcorrencias)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 2)
+                    .map(([tipo, quantidade]) => `${configuracoes[tipo].nome}: ${quantidade}`)
+                    .join(', ');
+                
+                return {
+                    nome: lider,
+                    pontuacao: pontuacao,
+                    classificacao: classificacao,
+                    classeCSS: classeCSS,
+                    totalOcorrencias: totalOcorrencias,
+                    principaisOcorrencias: principaisOcorrencias || 'Nenhuma ocorrência',
+                    resumoOcorrencias: resumoOcorrencias
+                };
+            });
+            
+            dadosLideres.sort((a, b) => {
+                switch(ordenacao) {
+                    case 'nome':
+                        return a.nome.localeCompare(b.nome);
+                    case 'ocorrencias':
+                        return a.totalOcorrencias - b.totalOcorrencias;
+                    case 'pontuacao':
+                    default:
+                        return b.pontuacao - a.pontuacao;
+                }
+            });
+            
+            const leadersGrid = document.getElementById('leadersGrid');
+            leadersGrid.innerHTML = '';
+            
+            dadosLideres.forEach((lider, index) => {
+                const card = document.createElement('div');
+                card.className = `leader-card ${lider.classeCSS}`;
+                card.innerHTML = `
+                    <div class="leader-header">
+                        <div class="leader-name">
+                            ${lider.nome}
+                            <span class="leader-ranking">#${index + 1}</span>
+                        </div>
+                        <div class="leader-score ${lider.classeCSS}">
+                            ${lider.pontuacao}
+                        </div>
+                    </div>
+                    <div class="leader-details">
+                        <div><strong>Classificação:</strong> ${lider.classificacao}</div>
+                        <div><strong>Total de Ocorrências:</strong> ${lider.totalOcorrencias}</div>
+                        <div><strong>Principais:</strong> ${lider.principaisOcorrencias}</div>
+                    </div>
+                `;
+                leadersGrid.appendChild(card);
+            });
+            
+            const tabelaBody = document.getElementById('tabelaComparativaBody');
+            tabelaBody.innerHTML = '';
+            
+            dadosLideres.forEach((lider, index) => {
+                const linha = document.createElement('tr');
+                linha.innerHTML = `
+                    <td>#${index + 1}</td>
+                    <td><strong>${lider.nome}</strong></td>
+                    <td>
+                        <span class="leader-score ${lider.classeCSS}" style="font-size: 14px; padding: 4px 8px;">
+                            ${lider.pontuacao}
+                        </span>
+                    </td>
+                    <td>${lider.classificacao}</td>
+                    <td>${lider.totalOcorrencias}</td>
+                    <td>${lider.principaisOcorrencias}</td>
+                `;
+                tabelaBody.appendChild(linha);
+            });
+            
+            gerarGraficoComparativo(dadosLideres);
+            
+            document.getElementById('semDadosComparativo').style.display = 'none';
+        }
+
+        // FUNÇÃO NOVA: Gráfico Comparativo
+        function gerarGraficoComparativo(dadosLideres) {
+            const ctx = document.getElementById('graficoComparativo').getContext('2d');
+            
+            if (chartComparativo) {
+                chartComparativo.destroy();
+            }
+            
+            const labels = dadosLideres.map(lider => lider.nome);
+            const pontuacoes = dadosLideres.map(lider => lider.pontuacao);
+            const cores = dadosLideres.map(lider => {
+                switch(lider.classeCSS) {
+                    case 'excellent': return '#4caf50';
+                    case 'good': return '#8bc34a';
+                    case 'regular': return '#ffc107';
+                    case 'poor': return '#ff9800';
+                    case 'critical': return '#f44336';
+                    default: return '#2196f3';
+                }
+            });
+            
+            chartComparativo = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Pontuação',
+                        data: pontuacoes,
+                        backgroundColor: cores,
+                        borderColor: cores.map(cor => cor.replace('0.8', '1')),
+                        borderWidth: 2,
+                        borderRadius: 4,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Comparativo de Pontuações entre Líderes',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const lider = dadosLideres[context.dataIndex];
+                                    return `Pontuação: ${lider.pontuacao} - ${lider.classificacao}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Pontuação'
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Líderes'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
         }
 
         function preencherAnosRelatorios() {
             const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
             const anos = new Set();
             
-            // Extrair anos das ocorrências
             ocorrencias.forEach(oc => {
                 const ano = new Date(oc.data).getFullYear();
                 anos.add(ano);
             });
             
-            // Adicionar ano atual se não houver ocorrências
-            if (anos.size === 0) {
-                anos.add(new Date().getFullYear());
-            }
+            const anoAtual = new Date().getFullYear();
+            anos.add(anoAtual);
             
-            // Ordenar anos (decrescente)
             const anosOrdenados = Array.from(anos).sort((a, b) => b - a);
             
-            // Preencher selects de ano
             const selectsAno = ['anoRelatorio', 'anoRelatorioAnual'];
             selectsAno.forEach(selectId => {
                 const select = document.getElementById(selectId);
@@ -1776,15 +2034,18 @@
                     select.appendChild(option);
                 });
             });
+            
+            document.getElementById('anoRelatorio').value = anoAtual;
+            document.getElementById('anoRelatorioAnual').value = anoAtual;
         }
 
-        // CORREÇÃO: Função para gerar relatório diário com lógica corrigida
         function gerarRelatorioDiario() {
             const data = document.getElementById('dataRelatorioDiario').value;
             const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
             const container = document.getElementById('relatorioDiarioContainer');
             
-            // Filtrar ocorrências da data selecionada
+            relatorioAtivo = { tipo: 'diario', data: data };
+            
             const ocorrenciasDia = ocorrencias.filter(oc => oc.data === data);
             
             if (ocorrenciasDia.length === 0) {
@@ -1797,7 +2058,6 @@
                 return;
             }
             
-            // Agrupar por líder
             const ocorrenciasPorLider = {};
             ocorrenciasDia.forEach(oc => {
                 if (!ocorrenciasPorLider[oc.lider]) {
@@ -1806,12 +2066,11 @@
                 ocorrenciasPorLider[oc.lider].push(oc);
             });
             
-            // Gerar relatório
-            let html = `<h4>Relatório Diário - ${formatarData(data)}</h4>`;
+            let html = `<h4 id="relatorioDiarioTitle">Relatório Diário - ${formatarData(data)}</h4>`;
             
             Object.keys(ocorrenciasPorLider).forEach(lider => {
                 html += `<h5 style="margin-top: 16px;">${lider}</h5>`;
-                html += `<div class="table-container"><table class="table"><thead><tr><th>Tipo</th><th>Quantidade/Qualidade</th><th>Descrição</th></tr></thead><tbody>`;
+                html += `<div class="table-container"><table class="table" id="tabelaRelatorioDiario-${lider.replace(/\s/g, '')}"><thead><tr><th>Tipo</th><th>Quantidade/Qualidade</th><th>Descrição</th></tr></thead><tbody>`;
                 
                 ocorrenciasPorLider[lider].forEach(oc => {
                     const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
@@ -1819,7 +2078,6 @@
 
                     let quantidadeTexto = oc.quantidade;
                     if (oc.tipo === 'relacionamento') {
-                        // CORREÇÃO: Para relacionamento, mostramos a qualidade
                         switch(oc.qualidadeRelacionamento) {
                             case 'bom': quantidadeTexto = 'Bom'; break;
                             case 'mediano': quantidadeTexto = 'Mediano'; break;
@@ -1841,21 +2099,22 @@
             container.innerHTML = html;
         }
 
-        // CORREÇÃO: Função para gerar relatório mensal com lógica corrigida
         function gerarRelatorioMensal() {
             const mes = parseInt(document.getElementById('mesRelatorio').value);
             const ano = parseInt(document.getElementById('anoRelatorio').value);
             const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
             const container = document.getElementById('relatorioMensalContainer');
             
-            // Filtrar ocorrências do mês/ano selecionado
+            relatorioAtivo = { tipo: 'mensal', mes: mes, ano: ano };
+            
             const ocorrenciasMes = ocorrencias.filter(oc => {
                 const data = new Date(oc.data);
                 return data.getMonth() + 1 === mes && data.getFullYear() === ano;
             });
             
+            const nomeMes = obterNomeMes(mes);
+            
             if (ocorrenciasMes.length === 0) {
-                const nomeMes = obterNomeMes(mes);
                 container.innerHTML = `
                     <div style="text-align: center; padding: 20px; color: var(--gray-500);">
                         <i class="fas fa-clipboard-list" style="font-size: 36px; margin-bottom: 12px;"></i>
@@ -1865,7 +2124,6 @@
                 return;
             }
             
-            // Agrupar por líder e tipo
             const resumoMensal = {};
             ocorrenciasMes.forEach(oc => {
                 if (!resumoMensal[oc.lider]) {
@@ -1875,29 +2133,26 @@
                     resumoMensal[oc.lider][oc.tipo] = 0;
                 }
                 
-                // Para relacionamento, contamos como 1 ocorrência para fins de resumo
                 resumoMensal[oc.lider][oc.tipo] += 1;
             });
             
-            // Gerar relatório
-            const nomeMes = obterNomeMes(mes);
-            let html = `<h4>Relatório Mensal - ${nomeMes}/${ano}</h4>`;
-            html += `<div class="table-container"><table class="table"><thead><tr><th>Líder</th>`;
+            let html = `<h4 id="relatorioMensalTitle">Relatório Mensal - ${nomeMes}/${ano}</h4>`;
+            html += `<div class="table-container"><table class="table" id="tabelaRelatorioMensal"><thead><tr><th>Líder</th>`;
             
-            // Cabeçalhos dos tipos
             const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
-            Object.keys(configuracoes).forEach(tipo => {
+            const tiposOrdenados = Object.keys(configuracoes);
+            
+            tiposOrdenados.forEach(tipo => {
                 html += `<th>${configuracoes[tipo].nome}</th>`;
             });
             
             html += `<th>Total</th></tr></thead><tbody>`;
             
-            // Dados dos líderes
             Object.keys(resumoMensal).forEach(lider => {
                 html += `<tr><td>${lider}</td>`;
                 let totalLider = 0;
                 
-                Object.keys(configuracoes).forEach(tipo => {
+                tiposOrdenados.forEach(tipo => {
                     const quantidade = resumoMensal[lider][tipo] || 0;
                     html += `<td>${quantidade}</td>`;
                     totalLider += quantidade;
@@ -1906,11 +2161,10 @@
                 html += `<td><strong>${totalLider}</strong></td></tr>`;
             });
             
-            // Totais por tipo
             html += `<tr><td><strong>Total</strong></td>`;
             let totalGeral = 0;
             
-            Object.keys(configuracoes).forEach(tipo => {
+            tiposOrdenados.forEach(tipo => {
                 let totalTipo = 0;
                 Object.keys(resumoMensal).forEach(lider => {
                     totalTipo += resumoMensal[lider][tipo] || 0;
@@ -1925,13 +2179,13 @@
             container.innerHTML = html;
         }
 
-        // CORREÇÃO: Função para gerar relatório anual com lógica corrigida
         function gerarRelatorioAnual() {
             const ano = parseInt(document.getElementById('anoRelatorioAnual').value);
             const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
             const container = document.getElementById('relatorioAnualContainer');
             
-            // Filtrar ocorrências do ano selecionado
+            relatorioAtivo = { tipo: 'anual', ano: ano };
+            
             const ocorrenciasAno = ocorrencias.filter(oc => {
                 const data = new Date(oc.data);
                 return data.getFullYear() === ano;
@@ -1947,7 +2201,6 @@
                 return;
             }
             
-            // Agrupar por mês e tipo
             const resumoAnual = {};
             ocorrenciasAno.forEach(oc => {
                 const data = new Date(oc.data);
@@ -1960,30 +2213,29 @@
                     resumoAnual[mes][oc.tipo] = 0;
                 }
                 
-                // Para relacionamento, contamos como 1 ocorrência para fins de resumo
                 resumoAnual[mes][oc.tipo] += 1;
             });
             
-            // Gerar relatório
-            let html = `<h4>Relatório Anual - ${ano}</h4>`;
-            html += `<div class="table-container"><table class="table"><thead><tr><th>Mês</th>`;
+            let html = `<h4 id="relatorioAnualTitle">Relatório Anual - ${ano}</h4>`;
+            html += `<div class="table-container"><table class="table" id="tabelaRelatorioAnual"><thead><tr><th>Mês</th>`;
             
-            // Cabeçalhos dos tipos
             const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
-            Object.keys(configuracoes).forEach(tipo => {
+            const tiposOrdenados = Object.keys(configuracoes);
+            
+            tiposOrdenados.forEach(tipo => {
                 html += `<th>${configuracoes[tipo].nome}</th>`;
             });
             
             html += `<th>Total</th></tr></thead><tbody>`;
             
-            // Dados dos meses
             for (let mes = 1; mes <= 12; mes++) {
-                if (resumoAnual[mes]) {
+                if (resumoAnual[mes] || true) {
+                    const mesTemDados = !!resumoAnual[mes];
                     html += `<tr><td>${obterNomeMes(mes)}</td>`;
                     let totalMes = 0;
                     
-                    Object.keys(configuracoes).forEach(tipo => {
-                        const quantidade = resumoAnual[mes][tipo] || 0;
+                    tiposOrdenados.forEach(tipo => {
+                        const quantidade = resumoAnual[mes] ? resumoAnual[mes][tipo] || 0 : 0;
                         html += `<td>${quantidade}</td>`;
                         totalMes += quantidade;
                     });
@@ -1992,11 +2244,10 @@
                 }
             }
             
-            // Totais anuais
             html += `<tr><td><strong>Total Anual</strong></td>`;
             let totalGeral = 0;
             
-            Object.keys(configuracoes).forEach(tipo => {
+            tiposOrdenados.forEach(tipo => {
                 let totalTipo = 0;
                 for (let mes = 1; mes <= 12; mes++) {
                     if (resumoAnual[mes]) {
@@ -2013,17 +2264,276 @@
             container.innerHTML = html;
         }
 
-        function atualizarConfiguracoes() {
-            // Esta função seria usada para atualizar as configurações do sistema
-            // Implementação básica para demonstração
-        }
-
         function exportarRelatorioPDF() {
-            alert('Funcionalidade de exportação para PDF será implementada em breve!');
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('l', 'pt', 'a4');
+            
+            let title = "Relatório de Liderança";
+            let tableElement = null;
+
+            if (relatorioAtivo.tipo === 'mensal') {
+                title = `Relatório Mensal - ${obterNomeMes(relatorioAtivo.mes)}/${relatorioAtivo.ano}`;
+                tableElement = document.getElementById('tabelaRelatorioMensal');
+            } else if (relatorioAtivo.tipo === 'anual') {
+                title = `Relatório Anual - ${relatorioAtivo.ano}`;
+                tableElement = document.getElementById('tabelaRelatorioAnual');
+            } else if (relatorioAtivo.tipo === 'diario') {
+                title = `Relatório Diário - ${formatarData(relatorioAtivo.data)}`;
+                const container = document.getElementById('relatorioDiarioContainer');
+                
+                doc.text(title, 40, 40);
+                
+                let finalY = 60;
+                const tables = container.querySelectorAll('table');
+                
+                if (tables.length === 0) {
+                     mostrarToast('Nenhuma tabela para exportar no Relatório Diário.', 'warning');
+                     return;
+                }
+                
+                tables.forEach((table) => {
+                    const leaderTitle = table.closest('.table-container').previousElementSibling.textContent;
+                    doc.text(leaderTitle, 40, finalY);
+                    
+                    doc.autoTable({ 
+                        html: table, 
+                        startY: finalY + 15,
+                        theme: 'grid'
+                    });
+                    
+                    finalY = doc.lastAutoTable.finalY + 20;
+                });
+                
+                doc.save(`Relatorio_Diario_${relatorioAtivo.data}.pdf`);
+                mostrarToast('Relatório PDF gerado com sucesso!', 'success');
+                return;
+            }
+
+            if (!tableElement) {
+                mostrarToast('Nenhuma tabela de relatório encontrada para exportação. Gere o relatório primeiro.', 'warning');
+                return;
+            }
+            
+            doc.text(title, 40, 40);
+            doc.autoTable({ 
+                html: tableElement, 
+                startY: 60,
+                theme: 'grid'
+            });
+            
+            doc.save(`Relatorio_${relatorioAtivo.tipo}_Lideranca.pdf`);
+            mostrarToast('Relatório PDF gerado com sucesso!', 'success');
         }
 
         function exportarRelatorioExcel() {
-            alert('Funcionalidade de exportação para Excel será implementada em breve!');
+            let tableElement = null;
+            let fileName = 'Relatorio_Lideranca.xls';
+            let titleElement = null;
+
+            if (relatorioAtivo.tipo === 'mensal') {
+                tableElement = document.getElementById('tabelaRelatorioMensal');
+                titleElement = document.getElementById('relatorioMensalTitle');
+                fileName = `Relatorio_Mensal_${relatorioAtivo.mes}_${relatorioAtivo.ano}.xls`;
+            } else if (relatorioAtivo.tipo === 'anual') {
+                tableElement = document.getElementById('tabelaRelatorioAnual');
+                titleElement = document.getElementById('relatorioAnualTitle');
+                fileName = `Relatorio_Anual_${relatorioAtivo.ano}.xls`;
+            } else if (relatorioAtivo.tipo === 'diario') {
+                tableElement = document.getElementById('relatorioDiarioContainer');
+                titleElement = document.getElementById('relatorioDiarioTitle');
+                fileName = `Relatorio_Diario_${relatorioAtivo.data}.xls`;
+            }
+
+            if (!tableElement) {
+                mostrarToast('Nenhuma tabela de relatório encontrada para exportação. Gere o relatório primeiro.', 'warning');
+                return;
+            }
+
+            let exportHtml = `
+                <html>
+                    <head>
+                        <meta charset="utf-8" />
+                        <style>
+                            table { border-collapse: collapse; }
+                            th, td { border: 1px solid #000; padding: 8px; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>${titleElement ? titleElement.textContent : 'Relatório'}</h1>
+                        ${tableElement.outerHTML}
+                    </body>
+                </html>`;
+
+            const uri = 'data:application/vnd.ms-excel;charset=utf-8,' + encodeURIComponent(exportHtml);
+            
+            const a = document.createElement('a');
+            a.href = uri;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            mostrarToast('Relatório Excel gerado com sucesso!', 'success');
+        }
+
+        function gerarGraficoTendencia() {
+            const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
+            const lideres = JSON.parse(localStorage.getItem('lideres'));
+            const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
+
+            const liderFiltro = document.getElementById('filtroLiderHistorico').value;
+            const lideresParaGrafico = liderFiltro === 'todos' ? lideres : [liderFiltro];
+            
+            const dadosMensais = {};
+            
+            ocorrencias.forEach(oc => {
+                const data = new Date(oc.data);
+                const mesAno = `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`;
+                
+                if (!dadosMensais[mesAno]) dadosMensais[mesAno] = {};
+                if (!dadosMensais[mesAno][oc.lider]) {
+                     dadosMensais[mesAno][oc.lider] = { pontosPerdidos: 0, contagemOcorrencias: 0 };
+                }
+
+                const config = configuracoes[oc.tipo];
+                let pontosPerdidos = 0;
+                
+                if (oc.tipo === 'notaLimpeza') {
+                    if (oc.quantidade < config.meta) pontosPerdidos = config.peso;
+                } else if (oc.tipo === 'relacionamento') {
+                    switch(oc.qualidadeRelacionamento) {
+                        case 'mediano': pontosPerdidos = config.peso * 0.5; break;
+                        case 'ruim': pontosPerdidos = config.peso; break;
+                    }
+                } else {
+                    if (oc.quantidade > config.limite) pontosPerdidos = config.peso * (oc.quantidade - config.limite);
+                }
+                
+                dadosMensais[mesAno][oc.lider].pontosPerdidos += pontosPerdidos;
+                dadosMensais[mesAno][oc.lider].contagemOcorrencias += 1;
+            });
+            
+            const mesesOrdenados = Object.keys(dadosMensais).sort();
+            const labels = mesesOrdenados.map(ma => {
+                const [ano, mes] = ma.split('-');
+                return `${obterNomeMes(parseInt(mes)).substring(0, 3)}/${ano.substring(2)}`;
+            });
+
+            const datasets = lideresParaGrafico.map((lider, index) => {
+                const cor = `hsl(${index * 60}, 70%, 50%)`;
+                
+                const dataPontuacao = mesesOrdenados.map(ma => {
+                    const dadosMes = dadosMensais[ma];
+                    if (dadosMes && dadosMes[lider]) {
+                        return Math.max(0, 100 - dadosMes[lider].pontosPerdidos);
+                    }
+                    return 100;
+                });
+
+                return {
+                    label: lider,
+                    data: dataPontuacao,
+                    borderColor: cor,
+                    backgroundColor: cor.replace('70%, 50%)', '50%, 90%)'),
+                    fill: false,
+                    tension: 0.3,
+                    borderWidth: 2
+                };
+            });
+            
+            if (chartTendencia) {
+                chartTendencia.destroy();
+            }
+
+            const ctx = document.getElementById('graficoTendencia').getContext('2d');
+            chartTendencia = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Pontuação de Liderança ao Longo do Tempo (Média Mensal)'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 50,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Pontuação Final'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function fazerBackup() {
+            const dadosBackup = {
+                lideres: localStorage.getItem('lideres'),
+                ocorrencias: localStorage.getItem('ocorrencias'),
+                configuracoes: localStorage.getItem('configuracoes')
+            };
+            
+            const jsonContent = JSON.stringify(dadosBackup, null, 2);
+            const blob = new Blob([jsonContent], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup_lideranca_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            mostrarToast('Backup de dados realizado com sucesso!', 'success');
+        }
+
+        function restaurarDados(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!confirm('ATENÇÃO: Tem certeza que deseja restaurar os dados? Os dados atuais serão SOBRESCRITOS.')) {
+                event.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const dadosRestauracao = JSON.parse(e.target.result);
+                    
+                    if (dadosRestauracao.lideres && dadosRestauracao.ocorrencias && dadosRestauracao.configuracoes) {
+                        localStorage.setItem('lideres', dadosRestauracao.lideres);
+                        localStorage.setItem('ocorrencias', dadosRestauracao.ocorrencias);
+                        localStorage.setItem('configuracoes', dadosRestauracao.configuracoes);
+                        
+                        mostrarToast('Dados restaurados com sucesso! Recarregando o sistema...', 'success');
+                        setTimeout(() => window.location.reload(), 1500);
+                    } else {
+                        throw new Error('Arquivo JSON inválido. Chaves essenciais ausentes.');
+                    }
+                } catch (error) {
+                    mostrarToast('Erro ao restaurar. Certifique-se de que é um arquivo JSON de backup válido.', 'danger');
+                    console.error('Erro de restauração:', error);
+                } finally {
+                    event.target.value = '';
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function atualizarConfiguracoes() {
+            // Implementação para carregar configurações
         }
 
         function mostrarModalConfirmacao() {
@@ -2041,36 +2551,37 @@
             carregarOcorrenciasHoje();
             carregarHistorico();
             fecharModal();
-            alert('Todos os dados foram removidos do sistema.');
+            mostrarToast('Todos os dados foram removidos do sistema.', 'danger');
+            setTimeout(() => window.location.reload(), 1500);
         }
 
-        // Funções auxiliares
         function openTab(evt, tabName) {
-            // Esconder todas as abas
             const tabcontent = document.getElementsByClassName('tab-content');
             for (let i = 0; i < tabcontent.length; i++) {
                 tabcontent[i].classList.remove('active');
             }
             
-            // Remover classe active de todos os botões
             const tablinks = document.getElementsByClassName('tab-button');
             for (let i = 0; i < tablinks.length; i++) {
                 tablinks[i].classList.remove('active');
                 tablinks[i].setAttribute('aria-selected', 'false');
             }
             
-            // Mostrar a aba atual e adicionar classe active ao botão
             document.getElementById(tabName).classList.add('active');
             evt.currentTarget.classList.add('active');
             evt.currentTarget.setAttribute('aria-selected', 'true');
             
-            // Atualizar dados específicos da aba
             if (tabName === 'resultado') {
                 document.getElementById('selectLiderResultado').value = '';
                 document.getElementById('resultadoContainer').style.display = 'none';
                 document.getElementById('semDadosResultado').style.display = 'block';
+            } else if (tabName === 'comparativo') {
+                gerarComparativoLideres();
             } else if (tabName === 'historico') {
                 carregarHistorico();
+                gerarGraficoTendencia();
+            } else if (tabName === 'relatorios') {
+                gerarRelatorioMensal();
             }
         }
 
@@ -2112,6 +2623,29 @@
                 const campo = document.getElementById(campoId);
                 campo.classList.remove('error');
             }
+        }
+
+        function mostrarToast(mensagem, tipo = 'info') {
+            const toast = document.getElementById('toastNotification');
+            const style = getComputedStyle(document.documentElement);
+            
+            let cor;
+            switch(tipo) {
+                case 'success': cor = style.getPropertyValue('--success-color'); break;
+                case 'danger': cor = style.getPropertyValue('--danger-color'); break;
+                case 'warning': cor = style.getPropertyValue('--warning-color'); break;
+                default: cor = style.getPropertyValue('--primary-color');
+            }
+
+            toast.textContent = mensagem;
+            toast.style.backgroundColor = cor;
+            toast.style.opacity = 1;
+            toast.style.display = 'block';
+
+            setTimeout(() => {
+                toast.style.opacity = 0;
+                setTimeout(() => toast.style.display = 'none', 300);
+            }, 3000);
         }
     </script>
 </body>
