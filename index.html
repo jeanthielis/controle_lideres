@@ -1005,14 +1005,14 @@
                                 <div class="filtros-relatorio">
                                     <div class="filtro-group">
                                         <label for="filtroLiderHistorico">Filtrar por Líder</label>
-                                        <select id="filtroLiderHistorico" class="form-control" onchange="carregarHistorico(); gerarGraficoTendencia()">
+                                        <select id="filtroLiderHistorico" class="form-control" onchange="carregarHistorico()">
                                             <option value="todos">Todos os Líderes</option>
                                         </select>
                                     </div>
                                     
                                     <div class="filtro-group">
                                         <label for="filtroDataHistorico">Filtrar por Período</label>
-                                        <select id="filtroDataHistorico" class="form-control" onchange="carregarHistorico(); gerarGraficoTendencia()">
+                                        <select id="filtroDataHistorico" class="form-control" onchange="carregarHistorico()">
                                             <option value="7">Últimos 7 dias</option>
                                             <option value="30">Últimos 30 dias</option>
                                             <option value="90">Últimos 90 dias</option>
@@ -1035,14 +1035,6 @@
                                             <option value="atestadoMedico">Atestado Médico</option>
                                         </select>
                                     </div>
-                                </div>
-                                
-                                <h3 class="indicador-title">
-                                    <i class="fas fa-chart-line"></i>
-                                    Gráfico de Tendência (Pontuação Média Mensal)
-                                </h3>
-                                <div class="chart-container-comparativo">
-                                    <canvas id="graficoTendencia"></canvas>
                                 </div>
                                 
                                 <h3 class="indicador-title">
@@ -1200,9 +1192,7 @@
 
     <script>
         // Variáveis globais
-        let chartTendencia = null;
         let chartComparativo = null;
-        let relatorioAtivo = { tipo: 'diario', data: new Date().toISOString().split('T')[0] };
 
         // Inicialização do sistema
         document.addEventListener('DOMContentLoaded', function() {
@@ -1390,6 +1380,40 @@
                 return;
             }
             
+            // Para nota de limpeza, verificar se está dentro da meta
+            const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
+            if (tipo === 'notaLimpeza') {
+                const config = configuracoes.notaLimpeza;
+                if (quantidade >= config.meta) {
+                    // Está dentro da meta, registrar apenas no histórico sem penalidade
+                    const ocorrencia = {
+                        id: Date.now().toString(),
+                        lider: lider,
+                        data: data,
+                        tipo: tipo,
+                        quantidade: quantidade,
+                        qualidadeRelacionamento: qualidadeRelacionamento,
+                        descricao: descricao + ' (Dentro da meta - Sem penalidade)',
+                        dataRegistro: new Date().toISOString(),
+                        dentroDaMeta: true
+                    };
+                    
+                    const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
+                    ocorrencias.push(ocorrencia);
+                    localStorage.setItem('ocorrencias', JSON.stringify(ocorrencias));
+                    
+                    document.getElementById('descricaoOcorrencia').value = '';
+                    document.getElementById('quantidadeOcorrencia').value = 1;
+                    
+                    carregarOcorrenciasHoje();
+                    carregarHistorico();
+                    preencherAnosRelatorios();
+                    
+                    mostrarToast('Nota de limpeza registrada (dentro da meta)!', 'success');
+                    return;
+                }
+            }
+            
             const ocorrencia = {
                 id: Date.now().toString(),
                 lider: lider,
@@ -1398,7 +1422,8 @@
                 quantidade: quantidade,
                 qualidadeRelacionamento: qualidadeRelacionamento,
                 descricao: descricao,
-                dataRegistro: new Date().toISOString()
+                dataRegistro: new Date().toISOString(),
+                dentroDaMeta: false
             };
             
             const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
@@ -1548,10 +1573,17 @@
                     
                     const item = document.createElement('div');
                     item.className = 'ocorrencia-item';
+                    
+                    let estiloExtra = '';
+                    if (ocorrencia.dentroDaMeta) {
+                        estiloExtra = 'style="background-color: var(--gray-50); border-left: 4px solid var(--success-color);"';
+                    }
+                    
                     item.innerHTML = `
-                        <div class="ocorrencia-info">
+                        <div class="ocorrencia-info" ${estiloExtra}>
                             <div class="ocorrencia-data">
                                 ${ocorrencia.lider} - ${formatarHora(ocorrencia.dataRegistro)}
+                                ${ocorrencia.dentroDaMeta ? '<span style="color: var(--success-color); margin-left: 10px;">✓ Dentro da Meta</span>' : ''}
                             </div>
                             <div class="ocorrencia-detalhes">
                                 <strong>${config.nome}</strong> - ${quantidadeTexto}
@@ -1567,8 +1599,6 @@
                     listaHistorico.appendChild(item);
                 });
             });
-            
-            gerarGraficoTendencia();
         }
 
         function excluirOcorrencia(id) {
@@ -1595,7 +1625,7 @@
             const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
             const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
             
-            let ocorrenciasLider = ocorrencias.filter(oc => oc.lider === lider);
+            let ocorrenciasLider = ocorrencias.filter(oc => oc.lider === lider && !oc.dentroDaMeta); // Excluir ocorrências dentro da meta do cálculo
             
             if (periodo !== 'todos') {
                 const hoje = new Date();
@@ -1760,7 +1790,8 @@
             }
 
             const dadosLideres = lideres.map(lider => {
-                let ocorrenciasLider = ocorrencias.filter(oc => oc.lider === lider);
+                let ocorrenciasLider = ocorrencias.filter(oc => oc.lider === lider && !oc.dentroDaMeta); // Excluir ocorrências dentro da meta
+                let todasOcorrenciasLider = ocorrencias.filter(oc => oc.lider === lider); // Incluir todas para contagem
                 
                 if (periodo !== 'todos') {
                     const hoje = new Date();
@@ -1785,11 +1816,16 @@
                         const dataOcorrencia = new Date(oc.data);
                         return dataOcorrencia.getTime() >= dataInicio.getTime();
                     });
+                    todasOcorrenciasLider = todasOcorrenciasLider.filter(oc => {
+                        const dataOcorrencia = new Date(oc.data);
+                        return dataOcorrencia.getTime() >= dataInicio.getTime();
+                    });
                 }
                 
                 let pontuacao = 100;
                 const resumoOcorrencias = {};
                 let totalOcorrencias = 0;
+                let quantidadeRegistrada = 0;
                 
                 ocorrenciasLider.forEach(ocorrencia => {
                     const config = configuracoes[ocorrencia.tipo];
@@ -1811,12 +1847,20 @@
                     }
                     
                     pontuacao -= pontosPerdidos;
-                    totalOcorrencias += ocorrencia.quantidade;
+                    totalOcorrencias += 1;
+                    quantidadeRegistrada += ocorrencia.quantidade;
                     
                     if (!resumoOcorrencias[ocorrencia.tipo]) {
                         resumoOcorrencias[ocorrencia.tipo] = 0;
                     }
                     resumoOcorrencias[ocorrencia.tipo] += ocorrencia.quantidade;
+                });
+                
+                // Adicionar contagem de todas as ocorrências (incluindo dentro da meta)
+                todasOcorrenciasLider.forEach(ocorrencia => {
+                    if (ocorrencia.dentroDaMeta) {
+                        quantidadeRegistrada += ocorrencia.quantidade;
+                    }
                 });
                 
                 pontuacao = Math.max(0, Math.round(pontuacao));
@@ -1853,6 +1897,7 @@
                     classificacao: classificacao,
                     classeCSS: classeCSS,
                     totalOcorrencias: totalOcorrencias,
+                    quantidadeRegistrada: quantidadeRegistrada,
                     principaisOcorrencias: principaisOcorrencias || 'Nenhuma ocorrência',
                     resumoOcorrencias: resumoOcorrencias
                 };
@@ -2070,7 +2115,7 @@
             
             Object.keys(ocorrenciasPorLider).forEach(lider => {
                 html += `<h5 style="margin-top: 16px;">${lider}</h5>`;
-                html += `<div class="table-container"><table class="table" id="tabelaRelatorioDiario-${lider.replace(/\s/g, '')}"><thead><tr><th>Tipo</th><th>Quantidade/Qualidade</th><th>Descrição</th></tr></thead><tbody>`;
+                html += `<div class="table-container"><table class="table" id="tabelaRelatorioDiario-${lider.replace(/\s/g, '')}"><thead><tr><th>Tipo</th><th>Quantidade/Qualidade</th><th>Descrição</th><th>Status</th></tr></thead><tbody>`;
                 
                 ocorrenciasPorLider[lider].forEach(oc => {
                     const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
@@ -2086,10 +2131,16 @@
                         }
                     }
                     
+                    let status = 'Ocorrência';
+                    if (oc.dentroDaMeta) {
+                        status = '<span style="color: var(--success-color);">Dentro da Meta</span>';
+                    }
+                    
                     html += `<tr>
                         <td>${config.nome}</td>
                         <td>${quantidadeTexto}</td>
                         <td>${oc.descricao || '-'}</td>
+                        <td>${status}</td>
                     </tr>`;
                 });
                 
@@ -2376,106 +2427,6 @@
             mostrarToast('Relatório Excel gerado com sucesso!', 'success');
         }
 
-        function gerarGraficoTendencia() {
-            const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
-            const lideres = JSON.parse(localStorage.getItem('lideres'));
-            const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
-
-            const liderFiltro = document.getElementById('filtroLiderHistorico').value;
-            const lideresParaGrafico = liderFiltro === 'todos' ? lideres : [liderFiltro];
-            
-            const dadosMensais = {};
-            
-            ocorrencias.forEach(oc => {
-                const data = new Date(oc.data);
-                const mesAno = `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`;
-                
-                if (!dadosMensais[mesAno]) dadosMensais[mesAno] = {};
-                if (!dadosMensais[mesAno][oc.lider]) {
-                     dadosMensais[mesAno][oc.lider] = { pontosPerdidos: 0, contagemOcorrencias: 0 };
-                }
-
-                const config = configuracoes[oc.tipo];
-                let pontosPerdidos = 0;
-                
-                if (oc.tipo === 'notaLimpeza') {
-                    if (oc.quantidade < config.meta) pontosPerdidos = config.peso;
-                } else if (oc.tipo === 'relacionamento') {
-                    switch(oc.qualidadeRelacionamento) {
-                        case 'mediano': pontosPerdidos = config.peso * 0.5; break;
-                        case 'ruim': pontosPerdidos = config.peso; break;
-                    }
-                } else {
-                    if (oc.quantidade > config.limite) pontosPerdidos = config.peso * (oc.quantidade - config.limite);
-                }
-                
-                dadosMensais[mesAno][oc.lider].pontosPerdidos += pontosPerdidos;
-                dadosMensais[mesAno][oc.lider].contagemOcorrencias += 1;
-            });
-            
-            const mesesOrdenados = Object.keys(dadosMensais).sort();
-            const labels = mesesOrdenados.map(ma => {
-                const [ano, mes] = ma.split('-');
-                return `${obterNomeMes(parseInt(mes)).substring(0, 3)}/${ano.substring(2)}`;
-            });
-
-            const datasets = lideresParaGrafico.map((lider, index) => {
-                const cor = `hsl(${index * 60}, 70%, 50%)`;
-                
-                const dataPontuacao = mesesOrdenados.map(ma => {
-                    const dadosMes = dadosMensais[ma];
-                    if (dadosMes && dadosMes[lider]) {
-                        return Math.max(0, 100 - dadosMes[lider].pontosPerdidos);
-                    }
-                    return 100;
-                });
-
-                return {
-                    label: lider,
-                    data: dataPontuacao,
-                    borderColor: cor,
-                    backgroundColor: cor.replace('70%, 50%)', '50%, 90%)'),
-                    fill: false,
-                    tension: 0.3,
-                    borderWidth: 2
-                };
-            });
-            
-            if (chartTendencia) {
-                chartTendencia.destroy();
-            }
-
-            const ctx = document.getElementById('graficoTendencia').getContext('2d');
-            chartTendencia = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: datasets
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Pontuação de Liderança ao Longo do Tempo (Média Mensal)'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: false,
-                            min: 50,
-                            max: 100,
-                            title: {
-                                display: true,
-                                text: 'Pontuação Final'
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
         function fazerBackup() {
             const dadosBackup = {
                 lideres: localStorage.getItem('lideres'),
@@ -2579,7 +2530,6 @@
                 gerarComparativoLideres();
             } else if (tabName === 'historico') {
                 carregarHistorico();
-                gerarGraficoTendencia();
             } else if (tabName === 'relatorios') {
                 gerarRelatorioMensal();
             }
