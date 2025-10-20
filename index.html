@@ -9,8 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    
-    <style>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script> <style>
         /* --- VARIÁVEIS E ESTILOS GLOBAIS --- */
         :root {
             /* Paleta de cinzas - Material Design */
@@ -587,6 +586,70 @@
             margin-left: 8px;
         }
 
+        /* --- MENU DE EXPORTAÇÃO DISCRETO --- */
+        .export-menu-container {
+            position: relative;
+            display: inline-block;
+            margin-left: auto; /* Alinha à direita no flexbox */
+        }
+        
+        .export-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow-2);
+            z-index: 50;
+            min-width: 180px;
+            overflow: hidden;
+            margin-top: 8px;
+            display: none;
+            list-style: none;
+            padding: 0;
+        }
+
+        .export-dropdown.active {
+            display: block;
+        }
+
+        .export-dropdown button {
+            width: 100%;
+            padding: 10px 15px;
+            border: none;
+            background: white;
+            text-align: left;
+            font-size: 14px;
+            color: var(--gray-700);
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .export-dropdown button:hover {
+            background-color: var(--gray-100);
+            color: var(--primary-dark);
+        }
+        
+        .btn-icon-only {
+            background: transparent;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        .btn-icon-only:hover {
+            background: var(--gray-100);
+        }
+
         /* --- MODAL --- */
         .modal {
             display: none;
@@ -610,12 +673,46 @@
             max-width: 500px;
             box-shadow: var(--shadow-4);
             animation: modalFadeIn 0.3s ease;
+            overflow-y: auto; /* Permite scroll no conteúdo do modal */
+            max-height: 90vh;
         }
 
         @keyframes modalFadeIn {
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
+        
+        /* Estilos da lista de líderes no modal */
+        #listaLideresModal {
+            margin-top: 20px;
+            border-top: 1px solid var(--gray-200);
+            padding-top: 15px;
+        }
+        
+        .lider-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        .lider-name {
+            font-weight: 500;
+            color: var(--gray-800);
+        }
+
+        .lider-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .lider-actions .btn-outline {
+            padding: 6px 10px;
+            font-size: 12px;
+            min-height: 30px;
+        }
+
 
         .form-row {
             display: grid;
@@ -756,13 +853,8 @@
                                     <i class="fas fa-history"></i>
                                     Histórico
                                 </button>
-                                <button type="button" class="tab-button" role="tab" aria-selected="false" aria-controls="relatorios" onclick="openTab(event, 'relatorios')">
-                                    <i class="fas fa-file-alt"></i>
-                                    Relatórios
-                                </button>
                             </div>
 
-                            <!-- Aba Ocorrências -->
                             <div id="ocorrencias" class="tab-content active" role="tabpanel" aria-labelledby="ocorrencias-tab">
                                 <h2 class="indicador-title">
                                     <i class="fas fa-clipboard-list"></i>
@@ -832,11 +924,9 @@
                                 </h3>
                                 
                                 <div id="listaOcorrenciasHoje" class="list">
-                                    <!-- Ocorrências serão carregadas aqui -->
-                                </div>
+                                    </div>
                             </div>
 
-                            <!-- Aba Resultado -->
                             <div id="resultado" class="tab-content" role="tabpanel" aria-labelledby="resultado-tab">
                                 <h2 class="indicador-title">
                                     <i class="fas fa-chart-line"></i>
@@ -850,14 +940,30 @@
                                     </select>
                                 </div>
                                 
-                                <div class="form-group">
-                                    <label for="periodoResultado" class="form-label">Período de Análise</label>
-                                    <select id="periodoResultado" class="form-control" onchange="calcularResultadoLider()">
-                                        <option value="hoje">Hoje</option>
-                                        <option value="semana">Esta Semana</option>
-                                        <option value="mes">Este Mês</option>
-                                        <option value="todos">Todo o Período</option>
-                                    </select>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="periodoResultado" class="form-label">Período de Análise</label>
+                                        <select id="periodoResultado" class="form-control" onchange="calcularResultadoLider()">
+                                            <option value="1">Janeiro</option>
+                                            <option value="2">Fevereiro</option>
+                                            <option value="3">Março</option>
+                                            <option value="4">Abril</option>
+                                            <option value="5">Maio</option>
+                                            <option value="6">Junho</option>
+                                            <option value="7">Julho</option>
+                                            <option value="8">Agosto</option>
+                                            <option value="9">Setembro</option>
+                                            <option value="10">Outubro</option>
+                                            <option value="11">Novembro</option>
+                                            <option value="12">Dezembro</option>
+                                            <option value="anual">Anual</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group" id="anoResultadoGroup">
+                                        <label for="anoResultado" class="form-label">Ano</label>
+                                        <select id="anoResultado" class="form-control" onchange="calcularResultadoLider()">
+                                            </select>
+                                    </div>
                                 </div>
                                 
                                 <div id="resultadoContainer" style="display: none;">
@@ -894,108 +1000,133 @@
                                 
                                 <div id="semDadosResultado" style="text-align: center; padding: 40px; color: var(--gray-500);">
                                     <i class="fas fa-chart-bar" style="font-size: 48px; margin-bottom: 16px;"></i>
-                                    <p>Selecione um líder para visualizar o resultado da avaliação</p>
+                                    <p>Selecione um líder e um período para visualizar o resultado da avaliação</p>
                                 </div>
                             </div>
 
-                            <!-- NOVA ABA: COMPARATIVO ENTRE LÍDERES -->
                             <div id="comparativo" class="tab-content" role="tabpanel" aria-labelledby="comparativo-tab">
-                                <h2 class="indicador-title">
+                                <h2 class="indicador-title" style="justify-content: flex-start;">
                                     <i class="fas fa-chart-bar"></i>
                                     Comparativo entre Líderes
-                                </h2>
-                                
-                                <!-- Legenda de Pontuações -->
-                                <div class="score-legend">
-                                    <div class="score-legend-item score-excellent">
-                                        <div class="score-legend-color score-excellent"></div>
-                                        <span>Excelente (90-100)</span>
-                                    </div>
-                                    <div class="score-legend-item score-good">
-                                        <div class="score-legend-color score-good"></div>
-                                        <span>Bom (80-89)</span>
-                                    </div>
-                                    <div class="score-legend-item score-regular">
-                                        <div class="score-legend-color score-regular"></div>
-                                        <span>Regular (70-79)</span>
-                                    </div>
-                                    <div class="score-legend-item score-poor">
-                                        <div class="score-legend-color score-poor"></div>
-                                        <span>Ruim (60-69)</span>
-                                    </div>
-                                    <div class="score-legend-item score-critical">
-                                        <div class="score-legend-color score-critical"></div>
-                                        <span>Crítico (0-59)</span>
-                                    </div>
-                                </div>
-
-                                <!-- Filtros -->
-                                <div class="filtros-relatorio">
-                                    <div class="filtro-group">
-                                        <label for="periodoComparativo" class="form-label">Período de Análise</label>
-                                        <select id="periodoComparativo" class="form-control" onchange="gerarComparativoLideres()">
-                                            <option value="hoje">Hoje</option>
-                                            <option value="semana">Esta Semana</option>
-                                            <option value="mes">Este Mês</option>
-                                            <option value="todos" selected>Todo o Período</option>
-                                        </select>
-                                    </div>
                                     
-                                    <div class="filtro-group">
-                                        <label for="ordenacaoComparativo" class="form-label">Ordenar por</label>
-                                        <select id="ordenacaoComparativo" class="form-control" onchange="gerarComparativoLideres()">
-                                            <option value="pontuacao">Pontuação (Maior-Menor)</option>
-                                            <option value="nome">Nome (A-Z)</option>
-                                            <option value="ocorrencias">Ocorrências (Menor-Maior)</option>
-                                        </select>
+                                    <div class="export-menu-container">
+                                        <button type="button" class="btn btn-icon-only" onclick="toggleExportMenu(event)">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <div id="exportDropdown" class="export-dropdown">
+                                            <button type="button" onclick="exportarRelatorioPDF()">
+                                                <i class="fas fa-file-pdf" style="color: var(--danger-color);"></i>
+                                                Exportar para PDF (Imagem)
+                                            </button>
+                                            <button type="button" onclick="exportarRelatorioExcel()">
+                                                <i class="fas fa-file-excel" style="color: var(--success-color);"></i>
+                                                Exportar para Excel (Tabela)
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
+                                    </h2>
 
-                                <!-- Cards dos Líderes -->
-                                <div id="comparativoContainer">
-                                    <div class="leaders-grid" id="leadersGrid">
-                                        <!-- Os cards dos líderes serão gerados aqui -->
-                                    </div>
+                                <div id="comparativoContentToPrint"> 
                                     
-                                    <div id="semDadosComparativo" style="text-align: center; padding: 40px; color: var(--gray-500);">
-                                        <i class="fas fa-users" style="font-size: 48px; margin-bottom: 16px;"></i>
-                                        <p>Nenhum líder cadastrado ou dados disponíveis para comparação</p>
+                                    <div class="score-legend">
+                                        <div class="score-legend-item score-excellent">
+                                            <div class="score-legend-color score-excellent"></div>
+                                            <span>Excelente (90-100)</span>
+                                        </div>
+                                        <div class="score-legend-item score-good">
+                                            <div class="score-legend-color score-good"></div>
+                                            <span>Bom (80-89)</span>
+                                        </div>
+                                        <div class="score-legend-item score-regular">
+                                            <div class="score-legend-color score-regular"></div>
+                                            <span>Regular (70-79)</span>
+                                        </div>
+                                        <div class="score-legend-item score-poor">
+                                            <div class="score-legend-color score-poor"></div>
+                                            <span>Ruim (60-69)</span>
+                                        </div>
+                                        <div class="score-legend-item score-critical">
+                                            <div class="score-legend-color score-critical"></div>
+                                            <span>Crítico (0-59)</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="filtros-relatorio">
+                                        <div class="filtro-group">
+                                            <label for="periodoComparativo" class="form-label">Período de Análise</label>
+                                            <select id="periodoComparativo" class="form-control" onchange="gerarComparativoLideres()">
+                                                <option value="1">Janeiro</option>
+                                                <option value="2">Fevereiro</option>
+                                                <option value="3">Março</option>
+                                                <option value="4">Abril</option>
+                                                <option value="5">Maio</option>
+                                                <option value="6">Junho</option>
+                                                <option value="7">Julho</option>
+                                                <option value="8">Agosto</option>
+                                                <option value="9">Setembro</option>
+                                                <option value="10">Outubro</option>
+                                                <option value="11">Novembro</option>
+                                                <option value="12">Dezembro</option>
+                                                <option value="anual" selected>Anual</option>
+                                            </select>
+                                        </div>
+                                        <div class="filtro-group" id="anoComparativoGroup">
+                                            <label for="anoComparativo" class="form-label">Ano</label>
+                                            <select id="anoComparativo" class="form-control" onchange="gerarComparativoLideres()">
+                                                </select>
+                                        </div>
+                                        
+                                        <div class="filtro-group">
+                                            <label for="ordenacaoComparativo" class="form-label">Ordenar por</label>
+                                            <select id="ordenacaoComparativo" class="form-control" onchange="gerarComparativoLideres()">
+                                                <option value="pontuacao">Pontuação (Maior-Menor)</option>
+                                                <option value="nome">Nome (A-Z)</option>
+                                                <option value="ocorrencias">Ocorrências (Menor-Maior)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div id="comparativoContainer">
+                                        <div class="leaders-grid" id="leadersGrid">
+                                            </div>
+                                        
+                                        <div id="semDadosComparativo" style="text-align: center; padding: 40px; color: var(--gray-500);">
+                                            <i class="fas fa-users" style="font-size: 48px; margin-bottom: 16px;"></i>
+                                            <p>Nenhum líder cadastrado ou dados disponíveis para comparação</p>
+                                        </div>
+                                    </div>
+
+                                    <h3 class="indicador-title">
+                                        <i class="fas fa-chart-bar"></i>
+                                        Gráfico Comparativo de Pontuações
+                                    </h3>
+                                    <div class="chart-container-comparativo">
+                                        <canvas id="graficoComparativo"></canvas>
+                                    </div>
+
+                                    <h3 class="indicador-title">
+                                        <i class="fas fa-table"></i>
+                                        Tabela Comparativa Detalhada
+                                    </h3>
+                                    <div class="table-container">
+                                        <table class="table" id="tabelaComparativa">
+                                            <thead>
+                                                <tr>
+                                                    <th>Posição</th>
+                                                    <th>Líder</th>
+                                                    <th>Pontuação</th>
+                                                    <th>Classificação</th>
+                                                    <th>Total de Registros</th>
+                                                    <th>Principais Ocorrências</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tabelaComparativaBody">
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
-
-                                <!-- Gráfico Comparativo -->
-                                <h3 class="indicador-title">
-                                    <i class="fas fa-chart-bar"></i>
-                                    Gráfico Comparativo de Pontuações
-                                </h3>
-                                <div class="chart-container-comparativo">
-                                    <canvas id="graficoComparativo"></canvas>
                                 </div>
 
-                                <!-- Tabela Comparativa -->
-                                <h3 class="indicador-title">
-                                    <i class="fas fa-table"></i>
-                                    Tabela Comparativa Detalhada
-                                </h3>
-                                <div class="table-container">
-                                    <table class="table" id="tabelaComparativa">
-                                        <thead>
-                                            <tr>
-                                                <th>Posição</th>
-                                                <th>Líder</th>
-                                                <th>Pontuação</th>
-                                                <th>Classificação</th>
-                                                <th>Total Ocorrências</th>
-                                                <th>Principais Ocorrências</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="tabelaComparativaBody">
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <!-- Aba Histórico -->
                             <div id="historico" class="tab-content" role="tabpanel" aria-labelledby="historico-tab">
                                 <h2 class="indicador-title">
                                     <i class="fas fa-history"></i>
@@ -1011,15 +1142,31 @@
                                     </div>
                                     
                                     <div class="filtro-group">
-                                        <label for="filtroDataHistorico">Filtrar por Período</label>
-                                        <select id="filtroDataHistorico" class="form-control" onchange="carregarHistorico()">
-                                            <option value="7">Últimos 7 dias</option>
-                                            <option value="30">Últimos 30 dias</option>
-                                            <option value="90">Últimos 90 dias</option>
+                                        <label for="filtroPeriodoHistorico">Filtrar por Período</label>
+                                        <select id="filtroPeriodoHistorico" class="form-control" onchange="carregarHistorico()">
+                                            <option value="1">Janeiro</option>
+                                            <option value="2">Fevereiro</option>
+                                            <option value="3">Março</option>
+                                            <option value="4">Abril</option>
+                                            <option value="5">Maio</option>
+                                            <option value="6">Junho</option>
+                                            <option value="7">Julho</option>
+                                            <option value="8">Agosto</option>
+                                            <option value="9">Setembro</option>
+                                            <option value="10">Outubro</option>
+                                            <option value="11">Novembro</option>
+                                            <option value="12">Dezembro</option>
+                                            <option value="anual" selected>Anual</option>
                                             <option value="todos">Todo o Período</option>
                                         </select>
                                     </div>
                                     
+                                    <div class="filtro-group">
+                                        <label for="filtroAnoHistorico">Ano</label>
+                                        <select id="filtroAnoHistorico" class="form-control" onchange="carregarHistorico()">
+                                            </select>
+                                    </div>
+
                                     <div class="filtro-group">
                                         <label for="filtroTipoHistorico">Filtrar por Tipo</label>
                                         <select id="filtroTipoHistorico" class="form-control" onchange="carregarHistorico()">
@@ -1043,91 +1190,8 @@
                                 </h3>
                                 
                                 <div id="listaHistorico" class="list">
-                                    <!-- Histórico será carregado aqui -->
-                                </div>
-                            </div>
+                                    </div>
 
-                            <!-- Aba Relatórios -->
-                            <div id="relatorios" class="tab-content" role="tabpanel" aria-labelledby="relatorios-tab">
-                                <h2 class="indicador-title">
-                                    <i class="fas fa-chart-bar"></i>
-                                    Relatórios e Exportação
-                                </h2>
-                                
-                                <div class="indicador-group">
-                                    <h3 class="indicador-title">Relatório Diário</h3>
-                                    
-                                    <div class="form-group">
-                                        <label for="dataRelatorioDiario" class="form-label">Data do Relatório</label>
-                                        <input type="date" id="dataRelatorioDiario" class="form-control" onchange="gerarRelatorioDiario()">
-                                    </div>
-                                    
-                                    <div id="relatorioDiarioContainer">
-                                        <!-- Relatório diário será gerado aqui -->
-                                    </div>
-                                </div>
-                                
-                                <div class="indicador-group">
-                                    <h3 class="indicador-title">Relatório Mensal</h3>
-                                    
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="mesRelatorio" class="form-label">Mês</label>
-                                            <select id="mesRelatorio" class="form-control" onchange="gerarRelatorioMensal()">
-                                                <option value="1">Janeiro</option>
-                                                <option value="2">Fevereiro</option>
-                                                <option value="3">Março</option>
-                                                <option value="4">Abril</option>
-                                                <option value="5">Maio</option>
-                                                <option value="6">Junho</option>
-                                                <option value="7">Julho</option>
-                                                <option value="8">Agosto</option>
-                                                <option value="9">Setembro</option>
-                                                <option value="10">Outubro</option>
-                                                <option value="11">Novembro</option>
-                                                <option value="12">Dezembro</option>
-                                            </select>
-                                        </div>
-                                        
-                                        <div class="form-group">
-                                            <label for="anoRelatorio" class="form-label">Ano</label>
-                                            <select id="anoRelatorio" class="form-control" onchange="gerarRelatorioMensal()">
-                                                <!-- Anos serão preenchidos dinamicamente -->
-                                            </select>
-                                        </div>
-                                    </div>
-                                    
-                                    <div id="relatorioMensalContainer">
-                                        <!-- Relatório mensal será gerado aqui -->
-                                    </div>
-                                </div>
-                                
-                                <div class="indicador-group">
-                                    <h3 class="indicador-title">Relatório Anual</h3>
-                                    
-                                    <div class="form-group">
-                                        <label for="anoRelatorioAnual" class="form-label">Ano</label>
-                                        <select id="anoRelatorioAnual" class="form-control" onchange="gerarRelatorioAnual()">
-                                            <!-- Anos serão preenchidos dinamicamente -->
-                                        </select>
-                                    </div>
-                                    
-                                    <div id="relatorioAnualContainer">
-                                        <!-- Relatório anual será gerado aqui -->
-                                    </div>
-                                </div>
-                                
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-primary" onclick="exportarRelatorioPDF()">
-                                        <i class="fas fa-file-pdf"></i>
-                                        Exportar para PDF
-                                    </button>
-                                    <button type="button" class="btn btn-success" onclick="exportarRelatorioExcel()">
-                                        <i class="fas fa-file-excel"></i>
-                                        Exportar para Excel
-                                    </button>
-                                </div>
-                                
                                 <div class="indicador-group" style="margin-top: 20px;">
                                     <h3 class="indicador-title">
                                         <i class="fas fa-database"></i>
@@ -1147,6 +1211,7 @@
                                     </div>
                                 </div>
                             </div>
+                            
                         </div>
                     </form>
                 </div>
@@ -1154,26 +1219,34 @@
         </main>
     </div>
     
-    <!-- Modal Cadastro Líder -->
     <div id="modalCadastroLider" class="modal" role="dialog" aria-labelledby="modalCadastroTitle">
         <div class="modal-content">
             <h2 id="modalCadastroTitle" class="modal-title">
                 <i class="fas fa-user-plus"></i>
                 Cadastrar Novo Líder
             </h2>
-            <div class="form-group">
-                <label for="inputNovoLiderModal" class="form-label">Nome do Líder</label>
-                <input type="text" id="inputNovoLiderModal" class="form-control" placeholder="Digite o nome do líder">
-                <div id="inputNovoLiderModal-help" class="error-message" style="display: none;"></div>
+            <div id="cadastroLiderForm">
+                <div class="form-group">
+                    <label for="inputNovoLiderModal" class="form-label">Nome do Líder</label>
+                    <input type="text" id="inputNovoLiderModal" class="form-control" placeholder="Digite o nome do líder">
+                    <input type="hidden" id="inputLiderOriginal"> <div id="inputNovoLiderModal-help" class="error-message" style="display: none;"></div>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-outline" onclick="fecharModalCadastro()">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnSalvarLider" onclick="adicionarLiderModal()">Cadastrar</button>
+                </div>
             </div>
-            <div class="modal-buttons">
-                <button type="button" class="btn btn-outline" onclick="fecharModalCadastro()">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="adicionarLiderModal()">Cadastrar</button>
-            </div>
+            
+            <h3 class="indicador-title" style="margin-top: 20px;">
+                <i class="fas fa-users"></i>
+                Líderes Cadastrados
+            </h3>
+            
+            <div id="listaLideresModal">
+                </div>
         </div>
     </div>
     
-    <!-- Modal Confirmação -->
     <div id="modalConfirmacao" class="modal" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalMessage">
         <div class="modal-content">
             <h2 id="modalTitle" class="modal-title">Confirmação</h2>
@@ -1185,7 +1258,6 @@
         </div>
     </div>
 
-    <!-- Toast Notification -->
     <div id="toastNotification" style="position: fixed; bottom: 20px; right: 20px; background-color: var(--success-color); color: white; padding: 10px 20px; border-radius: var(--border-radius); box-shadow: var(--shadow-2); display: none; z-index: 1001; transition: opacity 0.3s;">
         Mensagem de Notificação
     </div>
@@ -1193,36 +1265,220 @@
     <script>
         // Variáveis globais
         let chartComparativo = null;
-
-        // Inicialização do sistema
+        
         document.addEventListener('DOMContentLoaded', function() {
             inicializarSistema();
             carregarLideres();
             atualizarConfiguracoes();
             carregarOcorrenciasHoje();
-            carregarHistorico();
             preencherAnosRelatorios();
             
-            // Definir data atual como padrão
             const hoje = new Date();
             document.getElementById('dataOcorrencia').valueAsDate = hoje;
-            document.getElementById('dataRelatorioDiario').valueAsDate = hoje;
             
-            // Definir mês atual como padrão
-            document.getElementById('mesRelatorio').value = hoje.getMonth() + 1;
-            document.getElementById('anoRelatorio').value = hoje.getFullYear();
-            document.getElementById('anoRelatorioAnual').value = hoje.getFullYear();
+            const mesAtual = hoje.getMonth() + 1;
+            const anoAtual = hoje.getFullYear();
+            const anoAtualStr = anoAtual.toString();
+
+            // Configurar valores iniciais
+            document.getElementById('periodoResultado').value = mesAtual;
+            document.getElementById('anoResultado').value = anoAtualStr;
             
-            // Gerar relatórios iniciais
-            gerarRelatorioDiario();
-            gerarRelatorioMensal();
-            gerarRelatorioAnual();
+            document.getElementById('periodoComparativo').value = 'anual'; 
+            // O ano é preenchido pela preencherAnosRelatorios e já estará como o anoAtual
             
-            // Gerar comparativo inicial
+            document.getElementById('filtroPeriodoHistorico').value = 'todos'; 
+            document.getElementById('filtroAnoHistorico').value = anoAtualStr;
+            
+            // Chamar funções de carregamento/cálculo APÓS a inicialização dos filtros
+            carregarHistorico();
             gerarComparativoLideres();
+            calcularResultadoLider(); // Tenta carregar o resultado se houver líder e período padrão
+            
+            document.addEventListener('click', function(event) {
+                const dropdown = document.getElementById('exportDropdown');
+                const menuButton = document.querySelector('.export-menu-container button');
+                if (dropdown && dropdown.classList.contains('active') && !dropdown.contains(event.target) && event.target !== menuButton) {
+                    dropdown.classList.remove('active');
+                }
+            });
         });
 
-        // Funções principais do sistema
+        // Função para alternar a visibilidade do menu de exportação
+        function toggleExportMenu(event) {
+            event.stopPropagation();
+            document.getElementById('exportDropdown').classList.toggle('active');
+        }
+        
+        // NOVO: Função para renderizar a lista de líderes no modal
+        function renderizarListaLideres() {
+            const listaContainer = document.getElementById('listaLideresModal');
+            const lideres = JSON.parse(localStorage.getItem('lideres'));
+            
+            listaContainer.innerHTML = '';
+
+            if (lideres.length === 0) {
+                listaContainer.innerHTML = `
+                    <div style="text-align: center; padding: 10px; color: var(--gray-500);">
+                        Nenhum líder cadastrado.
+                    </div>
+                `;
+                return;
+            }
+            
+            // Ordena os líderes por nome
+            lideres.sort((a, b) => a.localeCompare(b));
+
+            lideres.forEach(lider => {
+                const item = document.createElement('div');
+                item.className = 'lider-item';
+                item.innerHTML = `
+                    <span class="lider-name">${lider}</span>
+                    <div class="lider-actions">
+                        <button type="button" class="btn btn-outline" onclick="editarLider('${lider}')" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger" style="padding: 6px 10px; font-size: 12px; min-height: 30px;" onclick="removerLider('${lider}')" title="Excluir">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                listaContainer.appendChild(item);
+            });
+        }
+        
+        // NOVO: Função para iniciar a edição de um líder
+        function editarLider(nomeAntigo) {
+            document.getElementById('inputNovoLiderModal').value = nomeAntigo;
+            document.getElementById('inputLiderOriginal').value = nomeAntigo;
+            document.getElementById('btnSalvarLider').textContent = 'Salvar Edição';
+            document.getElementById('btnSalvarLider').onclick = salvarEdicaoLider;
+            document.getElementById('modalCadastroTitle').innerHTML = '<i class="fas fa-user-edit"></i> Editar Líder';
+            document.getElementById('inputNovoLiderModal').focus();
+            limparErro('inputNovoLiderModal');
+            mostrarToast(`Editando: ${nomeAntigo}`, 'info');
+        }
+        
+        // NOVO: Função para salvar a edição do líder
+        function salvarEdicaoLider() {
+            const inputNovoLider = document.getElementById('inputNovoLiderModal');
+            const nomeNovo = inputNovoLider.value.trim();
+            const nomeAntigo = document.getElementById('inputLiderOriginal').value;
+            
+            if (!nomeNovo) {
+                mostrarErro('inputNovoLiderModal', 'Por favor, insira um nome.');
+                return;
+            }
+            
+            const lideres = JSON.parse(localStorage.getItem('lideres'));
+            
+            if (nomeNovo !== nomeAntigo && lideres.includes(nomeNovo)) {
+                mostrarErro('inputNovoLiderModal', 'Este nome já está cadastrado.');
+                return;
+            }
+
+            // 1. Atualiza a lista de líderes
+            const index = lideres.indexOf(nomeAntigo);
+            if (index > -1) {
+                lideres[index] = nomeNovo;
+                localStorage.setItem('lideres', JSON.stringify(lideres));
+            } else {
+                 mostrarToast(`Erro: Líder "${nomeAntigo}" não encontrado.`, 'danger');
+                 return;
+            }
+            
+            // 2. Atualiza todas as ocorrências (muito importante!)
+            const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
+            const ocorrenciasAtualizadas = ocorrencias.map(oc => {
+                if (oc.lider === nomeAntigo) {
+                    oc.lider = nomeNovo;
+                }
+                return oc;
+            });
+            localStorage.setItem('ocorrencias', JSON.stringify(ocorrenciasAtualizadas));
+            
+            // 3. Reseta o modal e recarrega os dados
+            fecharModalCadastro();
+            carregarLideres();
+            carregarHistorico();
+            gerarComparativoLideres();
+            calcularResultadoLider(); // Recarrega o resultado se o líder editado estiver selecionado
+            
+            mostrarToast(`Líder editado para "${nomeNovo}" com sucesso!`, 'success');
+        }
+        
+        // NOVO: Função para remover um líder
+        function removerLider(nomeLider) {
+            if (confirm(`ATENÇÃO: Tem certeza que deseja excluir o líder "${nomeLider}" e todas as suas ocorrências? Esta ação é irreversível.`)) {
+                const lideres = JSON.parse(localStorage.getItem('lideres'));
+                const lideresFiltrados = lideres.filter(l => l !== nomeLider);
+                localStorage.setItem('lideres', JSON.stringify(lideresFiltrados));
+                
+                // Remove todas as ocorrências deste líder
+                const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
+                const ocorrenciasFiltradas = ocorrencias.filter(oc => oc.lider !== nomeLider);
+                localStorage.setItem('ocorrencias', JSON.stringify(ocorrenciasFiltradas));
+
+                // Recarrega todos os dados
+                carregarLideres();
+                carregarHistorico();
+                gerarComparativoLideres();
+                calcularResultadoLider(); // Força o recalculo
+                renderizarListaLideres(); // Atualiza o modal
+                
+                mostrarToast(`Líder "${nomeLider}" excluído com sucesso!`, 'danger');
+            }
+        }
+
+
+        function abrirModalCadastroLider() {
+            document.getElementById('modalCadastroLider').style.display = 'flex';
+            document.getElementById('inputNovoLiderModal').focus();
+            
+            // NOVO: Resetar o formulário para estado de "Cadastrar"
+            document.getElementById('inputNovoLiderModal').value = '';
+            document.getElementById('inputLiderOriginal').value = '';
+            document.getElementById('btnSalvarLider').textContent = 'Cadastrar';
+            document.getElementById('btnSalvarLider').onclick = adicionarLiderModal; // Define a função de cadastro
+            document.getElementById('modalCadastroTitle').innerHTML = '<i class="fas fa-user-plus"></i> Cadastrar Novo Líder';
+            limparErro('inputNovoLiderModal');
+            
+            // NOVO: Renderiza a lista ao abrir
+            renderizarListaLideres(); 
+        }
+
+        function fecharModalCadastro() {
+            document.getElementById('modalCadastroLider').style.display = 'none';
+            document.getElementById('inputNovoLiderModal').value = '';
+            limparErro('inputNovoLiderModal');
+        }
+
+        function adicionarLiderModal() {
+            const inputNovoLider = document.getElementById('inputNovoLiderModal');
+            const nomeLider = inputNovoLider.value.trim();
+            
+            if (!nomeLider) {
+                mostrarErro('inputNovoLiderModal', 'Por favor, insira um nome para o líder.');
+                return;
+            }
+            
+            const lideres = JSON.parse(localStorage.getItem('lideres'));
+            
+            if (lideres.includes(nomeLider)) {
+                mostrarErro('inputNovoLiderModal', 'Este líder já está cadastrado.');
+                return;
+            }
+            
+            lideres.push(nomeLider);
+            localStorage.setItem('lideres', JSON.stringify(lideres));
+            
+            inputNovoLider.value = ''; // Limpa o campo de cadastro
+            carregarLideres();
+            renderizarListaLideres(); // Atualiza a lista no modal
+            
+            mostrarToast(`Líder "${nomeLider}" cadastrado com sucesso!`, 'success');
+        }
+        
         function inicializarSistema() {
             if (!localStorage.getItem('lideres')) {
                 localStorage.setItem('lideres', JSON.stringify([]));
@@ -1237,7 +1493,7 @@
                     reclamacao: { nome: "Reclamação Pós Venda", peso: 5, limite: 0 },
                     etiquetaCancelada: { nome: "Etiqueta Cancelada", peso: 5, limite: 1 },
                     assertividade: { nome: "Assertividade da Equipe", peso: 10, limite: 0 },
-                    relacionamento: { nome: "Relacionamento com Supervisor", peso: 10, limite: 0 },
+                    relacionamento: { nome: "Relacionamento com Supervisor", peso: 10, limite: 0, acompanhamento: true }, // Add acompanhamento: true
                     notaLimpeza: { nome: "Nota da Organização e Limpeza", peso: 5, meta: 93 },
                     faltaSemJustificativa: { nome: "Falta sem Justificativa", peso: 15, limite: 0 },
                     advertenciaPonto: { nome: "Advertência por Ponto", peso: 8, limite: 1 },
@@ -1274,42 +1530,6 @@
             });
         }
 
-        function abrirModalCadastroLider() {
-            document.getElementById('modalCadastroLider').style.display = 'flex';
-            document.getElementById('inputNovoLiderModal').focus();
-        }
-
-        function fecharModalCadastro() {
-            document.getElementById('modalCadastroLider').style.display = 'none';
-            document.getElementById('inputNovoLiderModal').value = '';
-            limparErro('inputNovoLiderModal');
-        }
-
-        function adicionarLiderModal() {
-            const inputNovoLider = document.getElementById('inputNovoLiderModal');
-            const nomeLider = inputNovoLider.value.trim();
-            
-            if (!nomeLider) {
-                mostrarErro('inputNovoLiderModal', 'Por favor, insira um nome para o líder.');
-                return;
-            }
-            
-            const lideres = JSON.parse(localStorage.getItem('lideres'));
-            
-            if (lideres.includes(nomeLider)) {
-                mostrarErro('inputNovoLiderModal', 'Este líder já está cadastrado.');
-                return;
-            }
-            
-            lideres.push(nomeLider);
-            localStorage.setItem('lideres', JSON.stringify(lideres));
-            
-            fecharModalCadastro();
-            carregarLideres();
-            
-            mostrarToast(`Líder "${nomeLider}" cadastrado com sucesso!`, 'success');
-        }
-
         function toggleQuantidadeField() {
             const tipo = document.getElementById('tipoOcorrencia').value;
             const inputQuantidade = document.getElementById('quantidadeOcorrencia');
@@ -1326,6 +1546,7 @@
                 selectQualidade.disabled = false;
                 
                 labelQuantidade.textContent = 'Qualidade do Relacionamento';
+                inputQuantidade.value = 1; // Reseta o valor para 1 para evitar problemas
             } else {
                 inputQuantidade.style.display = 'block';
                 inputQuantidade.required = true;
@@ -1334,6 +1555,7 @@
                 selectQualidade.style.display = 'none';
                 selectQualidade.required = false;
                 selectQualidade.disabled = true;
+                selectQualidade.value = ''; // Reseta a seleção
                 
                 labelQuantidade.textContent = 'Quantidade';
             }
@@ -1345,9 +1567,16 @@
             const tipo = document.getElementById('tipoOcorrencia').value;
             const descricao = document.getElementById('descricaoOcorrencia').value;
             
-            let quantidade;
+            let quantidade = 0;
             let qualidadeRelacionamento = null;
             
+            const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
+
+            if (!lider || !data || !tipo) {
+                mostrarToast('Por favor, preencha todos os campos obrigatórios.', 'warning');
+                return;
+            }
+
             if (tipo === 'relacionamento') {
                 const selectQualidade = document.getElementById('selectQualidadeRelacionamento');
                 if (!selectQualidade.value) {
@@ -1357,61 +1586,33 @@
                 qualidadeRelacionamento = selectQualidade.value;
                 quantidade = 1;
             } else {
-                quantidade = parseInt(document.getElementById('quantidadeOcorrencia').value);
+                quantidade = parseFloat(document.getElementById('quantidadeOcorrencia').value);
             }
             
-            if (!lider) {
-                mostrarToast('Por favor, selecione um líder.', 'warning');
-                return;
-            }
-            
-            if (!data) {
-                mostrarToast('Por favor, selecione uma data.', 'warning');
-                return;
-            }
-            
-            if (!tipo) {
-                mostrarToast('Por favor, selecione um tipo de ocorrência.', 'warning');
-                return;
-            }
             
             if (tipo !== 'relacionamento' && (isNaN(quantidade) || quantidade < 0)) {
                 mostrarToast('Por favor, insira uma quantidade válida (igual ou superior a zero).', 'warning');
                 return;
             }
             
+            let dentroDaMeta = false;
+            let descricaoExtra = '';
+
             // Para nota de limpeza, verificar se está dentro da meta
-            const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
             if (tipo === 'notaLimpeza') {
                 const config = configuracoes.notaLimpeza;
                 if (quantidade >= config.meta) {
-                    // Está dentro da meta, registrar apenas no histórico sem penalidade
-                    const ocorrencia = {
-                        id: Date.now().toString(),
-                        lider: lider,
-                        data: data,
-                        tipo: tipo,
-                        quantidade: quantidade,
-                        qualidadeRelacionamento: qualidadeRelacionamento,
-                        descricao: descricao + ' (Dentro da meta - Sem penalidade)',
-                        dataRegistro: new Date().toISOString(),
-                        dentroDaMeta: true
-                    };
-                    
-                    const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
-                    ocorrencias.push(ocorrencia);
-                    localStorage.setItem('ocorrencias', JSON.stringify(ocorrencias));
-                    
-                    document.getElementById('descricaoOcorrencia').value = '';
-                    document.getElementById('quantidadeOcorrencia').value = 1;
-                    
-                    carregarOcorrenciasHoje();
-                    carregarHistorico();
-                    preencherAnosRelatorios();
-                    
-                    mostrarToast('Nota de limpeza registrada (dentro da meta)!', 'success');
-                    return;
+                    dentroDaMeta = true;
+                    descricaoExtra = ' (Dentro da meta - Sem penalidade)';
+                } else {
+                    descricaoExtra = ` (Abaixo da meta: ${quantidade} < ${config.meta})`;
                 }
+            } else if (tipo === 'atestadoMedico') {
+                // Atestado médico sempre é 'dentro da meta' para fins de pontuação (peso 0)
+                dentroDaMeta = true;
+            } else if (tipo === 'relacionamento' && qualidadeRelacionamento === 'bom') {
+                // Relacionamento 'bom' não gera penalidade, então pode ser tratado como 'dentro da meta'
+                dentroDaMeta = true;
             }
             
             const ocorrencia = {
@@ -1421,22 +1622,22 @@
                 tipo: tipo,
                 quantidade: quantidade,
                 qualidadeRelacionamento: qualidadeRelacionamento,
-                descricao: descricao,
+                descricao: descricao + descricaoExtra,
                 dataRegistro: new Date().toISOString(),
-                dentroDaMeta: false
+                dentroDaMeta: dentroDaMeta 
             };
             
             const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
             ocorrencias.push(ocorrencia);
             localStorage.setItem('ocorrencias', JSON.stringify(ocorrencias));
             
+            // Limpa formulário
             document.getElementById('descricaoOcorrencia').value = '';
-            
-            if (tipo === 'relacionamento') {
-                document.getElementById('selectQualidadeRelacionamento').value = '';
-            } else {
-                document.getElementById('quantidadeOcorrencia').value = 1;
-            }
+            document.getElementById('quantidadeOcorrencia').value = 1;
+            document.getElementById('selectQualidadeRelacionamento').value = '';
+            document.getElementById('tipoOcorrencia').value = '';
+            toggleQuantidadeField(); // Reseta o campo de quantidade/qualidade
+
             
             carregarOcorrenciasHoje();
             carregarHistorico();
@@ -1464,6 +1665,8 @@
                 return;
             }
             
+            ocorrenciasHoje.sort((a, b) => new Date(b.dataRegistro) - new Date(a.dataRegistro)); // Mais recentes primeiro
+
             ocorrenciasHoje.forEach(ocorrencia => {
                 const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
                 const config = configuracoes[ocorrencia.tipo];
@@ -1476,14 +1679,24 @@
                         case 'ruim': quantidadeTexto = 'Ruim'; break;
                         default: quantidadeTexto = 'Relacionamento';
                     }
+                } else if (ocorrencia.tipo === 'notaLimpeza') {
+                     quantidadeTexto = `Nota: ${ocorrencia.quantidade}`;
                 }
+
 
                 const item = document.createElement('div');
                 item.className = 'ocorrencia-item';
+                
+                let estiloExtra = '';
+                if (ocorrencia.dentroDaMeta) {
+                    estiloExtra = 'style="background-color: var(--gray-50); border-left: 4px solid var(--success-color);"';
+                }
+                
                 item.innerHTML = `
-                    <div class="ocorrencia-info">
+                    <div class="ocorrencia-info" ${estiloExtra}>
                         <div class="ocorrencia-data">
                             ${ocorrencia.lider} - ${formatarHora(ocorrencia.dataRegistro)}
+                            ${ocorrencia.dentroDaMeta && ocorrencia.tipo !== 'atestadoMedico' ? '<span style="color: var(--success-color); margin-left: 10px;">✓ Dentro da Meta</span>' : ''}
                         </div>
                         <div class="ocorrencia-detalhes">
                             <strong>${config.nome}</strong> - ${quantidadeTexto}
@@ -1504,33 +1717,44 @@
             const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
             const listaHistorico = document.getElementById('listaHistorico');
             const filtroLider = document.getElementById('filtroLiderHistorico').value;
-            const filtroData = document.getElementById('filtroDataHistorico').value;
+            const filtroPeriodo = document.getElementById('filtroPeriodoHistorico').value; // Mês (1-12), 'anual' ou 'todos'
+            const filtroAno = document.getElementById('filtroAnoHistorico').value;
             const filtroTipo = document.getElementById('filtroTipoHistorico').value;
             
             listaHistorico.innerHTML = '';
             
             let ocorrenciasFiltradas = ocorrencias;
             
+            // 1. Filtrar por Líder
             if (filtroLider !== 'todos') {
                 ocorrenciasFiltradas = ocorrenciasFiltradas.filter(oc => oc.lider === filtroLider);
             }
             
-            if (filtroData !== 'todos') {
-                const dias = parseInt(filtroData);
-                const dataLimite = new Date();
-                dataLimite.setDate(dataLimite.getDate() - dias);
-                
-                ocorrenciasFiltradas = ocorrenciasFiltradas.filter(oc => {
-                    const dataOcorrencia = new Date(oc.data);
-                    return dataOcorrencia >= dataLimite;
-                });
+            // 2. Filtrar por Período (Mês/Ano ou Anual ou Todos)
+            if (filtroPeriodo !== 'todos') {
+                const ano = parseInt(filtroAno);
+                if (!isNaN(ano)) {
+                    ocorrenciasFiltradas = ocorrenciasFiltradas.filter(oc => {
+                        const dataOcorrencia = new Date(oc.data);
+                        const anoOcorrencia = dataOcorrencia.getFullYear();
+                        
+                        if (filtroPeriodo === 'anual') {
+                            return anoOcorrencia === ano;
+                        } else {
+                            const mes = parseInt(filtroPeriodo);
+                            const mesOcorrencia = dataOcorrencia.getMonth() + 1;
+                            return anoOcorrencia === ano && mesOcorrencia === mes;
+                        }
+                    });
+                }
             }
             
+            // 3. Filtrar por Tipo
             if (filtroTipo !== 'todos') {
                 ocorrenciasFiltradas = ocorrenciasFiltradas.filter(oc => oc.tipo === filtroTipo);
             }
             
-            ocorrenciasFiltradas.sort((a, b) => new Date(b.data) - new Date(a.data));
+            ocorrenciasFiltradas.sort((a, b) => new Date(b.data) - new Date(a.data)); // Ordenar por data da ocorrência
             
             if (ocorrenciasFiltradas.length === 0) {
                 listaHistorico.innerHTML = `
@@ -1544,19 +1768,23 @@
             
             const ocorrenciasPorData = {};
             ocorrenciasFiltradas.forEach(ocorrencia => {
+                // Usa a data do ocorrido para agrupar
                 if (!ocorrenciasPorData[ocorrencia.data]) {
                     ocorrenciasPorData[ocorrencia.data] = [];
                 }
                 ocorrenciasPorData[ocorrencia.data].push(ocorrencia);
             });
             
-            Object.keys(ocorrenciasPorData).sort().reverse().forEach(data => {
+            Object.keys(ocorrenciasPorData).sort().reverse().forEach(data => { // Reverte para mostrar mais recente primeiro
                 const header = document.createElement('div');
                 header.className = 'indicador-title';
                 header.style.marginTop = '20px';
                 header.innerHTML = `<i class="fas fa-calendar-day"></i> ${formatarData(data)}`;
                 listaHistorico.appendChild(header);
                 
+                // Dentro do grupo de data, ordenar por dataRegistro (hora)
+                ocorrenciasPorData[data].sort((a, b) => new Date(b.dataRegistro) - new Date(a.dataRegistro));
+
                 ocorrenciasPorData[data].forEach(ocorrencia => {
                     const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
                     const config = configuracoes[ocorrencia.tipo];
@@ -1569,21 +1797,29 @@
                             case 'ruim': quantidadeTexto = 'Ruim'; break;
                             default: quantidadeTexto = 'Relacionamento';
                         }
+                    } else if (ocorrencia.tipo === 'notaLimpeza') {
+                        quantidadeTexto = `Nota: ${ocorrencia.quantidade}`;
                     }
                     
                     const item = document.createElement('div');
                     item.className = 'ocorrencia-item';
                     
                     let estiloExtra = '';
+                    let metaTag = '';
                     if (ocorrencia.dentroDaMeta) {
                         estiloExtra = 'style="background-color: var(--gray-50); border-left: 4px solid var(--success-color);"';
+                        if (ocorrencia.tipo !== 'atestadoMedico') {
+                             metaTag = '<span style="color: var(--success-color); margin-left: 10px;">✓ Dentro da Meta</span>';
+                        }
+                    } else if (ocorrencia.tipo === 'relacionamento' && ocorrencia.qualidadeRelacionamento === 'ruim') {
+                        estiloExtra = 'style="background-color: var(--gray-50); border-left: 4px solid var(--danger-color);"';
                     }
                     
                     item.innerHTML = `
                         <div class="ocorrencia-info" ${estiloExtra}>
                             <div class="ocorrencia-data">
                                 ${ocorrencia.lider} - ${formatarHora(ocorrencia.dataRegistro)}
-                                ${ocorrencia.dentroDaMeta ? '<span style="color: var(--success-color); margin-left: 10px;">✓ Dentro da Meta</span>' : ''}
+                                ${metaTag}
                             </div>
                             <div class="ocorrencia-detalhes">
                                 <strong>${config.nome}</strong> - ${quantidadeTexto}
@@ -1608,133 +1844,138 @@
                 localStorage.setItem('ocorrencias', JSON.stringify(ocorrenciasFiltradas));
                 carregarOcorrenciasHoje();
                 carregarHistorico();
+                calcularResultadoLider(); // Recalcula o resultado atual
+                gerarComparativoLideres(); // Recalcula o comparativo
                 mostrarToast('Ocorrência excluída.', 'danger');
             }
         }
 
         function calcularResultadoLider() {
             const lider = document.getElementById('selectLiderResultado').value;
-            const periodo = document.getElementById('periodoResultado').value;
+            const periodo = document.getElementById('periodoResultado').value; // Mês (1-12) ou 'anual'
+            const ano = parseInt(document.getElementById('anoResultado').value);
             
-            if (!lider) {
+            if (!lider || isNaN(ano)) {
                 document.getElementById('resultadoContainer').style.display = 'none';
                 document.getElementById('semDadosResultado').style.display = 'block';
+                document.getElementById('semDadosResultado').innerHTML = `
+                    <i class="fas fa-chart-bar" style="font-size: 48px; margin-bottom: 16px;"></i>
+                    <p>Selecione um líder e um período para visualizar o resultado da avaliação</p>
+                `;
                 return;
             }
             
             const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
             const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
             
-            let ocorrenciasLider = ocorrencias.filter(oc => oc.lider === lider && !oc.dentroDaMeta); // Excluir ocorrências dentro da meta do cálculo
+            // 1. Filtrar as ocorrências do líder e período (e ignorar as 'dentro da meta')
+            let ocorrenciasLider = ocorrencias.filter(oc => oc.lider === lider && !oc.dentroDaMeta);
             
-            if (periodo !== 'todos') {
-                const hoje = new Date();
-                let dataInicio;
+            ocorrenciasLider = ocorrenciasLider.filter(oc => {
+                const dataOcorrencia = new Date(oc.data);
+                const anoOcorrencia = dataOcorrencia.getFullYear();
                 
-                switch(periodo) {
-                    case 'hoje':
-                        dataInicio = new Date(hoje.toISOString().split('T')[0]);
-                        break;
-                    case 'semana':
-                        dataInicio = new Date(hoje);
-                        dataInicio.setDate(hoje.getDate() - 7);
-                        break;
-                    case 'mes':
-                        dataInicio = new Date(hoje);
-                        dataInicio.setMonth(hoje.getMonth() - 1);
-                        break;
-                }
-                
-                dataInicio.setHours(0, 0, 0, 0); 
-                
-                ocorrenciasLider = ocorrenciasLider.filter(oc => {
-                    const dataOcorrencia = new Date(oc.data);
-                    return dataOcorrencia.getTime() >= dataInicio.getTime();
-                });
-            }
-            
-            if (ocorrenciasLider.length === 0) {
-                document.getElementById('resultadoContainer').style.display = 'none';
-                document.getElementById('semDadosResultado').style.display = 'block';
-                document.getElementById('semDadosResultado').innerHTML = `
-                    <i class="fas fa-clipboard-list" style="font-size: 48px; margin-bottom: 16px;"></i>
-                    <p>Nenhuma ocorrência registrada para ${lider} no período selecionado</p>
-                `;
-                return;
-            }
-            
-            let pontuacaoFinal = 100;
-            const resumoOcorrencias = {};
-            const feedback = [];
-            
-            ocorrenciasLider.forEach(ocorrencia => {
-                const config = configuracoes[ocorrencia.tipo];
-                
-                if (!resumoOcorrencias[ocorrencia.tipo]) {
-                    resumoOcorrencias[ocorrencia.tipo] = {
-                        nome: config.nome,
-                        quantidade: 0,
-                        pontosPerdidos: 0
-                    };
-                }
-                
-                let pontosPerdidos = 0;
-                
-                if (ocorrencia.tipo === 'notaLimpeza') {
-                    if (ocorrencia.quantidade < config.meta) {
-                        pontosPerdidos = config.peso;
-                    }
-                } else if (ocorrencia.tipo === 'relacionamento') {
-                    switch(ocorrencia.qualidadeRelacionamento) {
-                        case 'bom':
-                            pontosPerdidos = 0;
-                            break;
-                        case 'mediano':
-                            pontosPerdidos = config.peso * 0.5;
-                            break;
-                        case 'ruim':
-                            pontosPerdidos = config.peso;
-                            break;
-                        default:
-                            pontosPerdidos = 0;
-                    }
+                if (periodo === 'anual') {
+                    return anoOcorrencia === ano;
                 } else {
-                    if (ocorrencia.quantidade > config.limite) {
-                        pontosPerdidos = config.peso * (ocorrencia.quantidade - config.limite);
-                    }
-                }
-                
-                resumoOcorrencias[ocorrencia.tipo].quantidade += 1;
-                resumoOcorrencias[ocorrencia.tipo].pontosPerdidos += pontosPerdidos;
-                
-                pontuacaoFinal -= pontosPerdidos;
-                
-                if (pontosPerdidos > 0) {
-                    let mensagem = '';
-                    if (ocorrencia.tipo === 'relacionamento') {
-                        mensagem = `${config.nome} (${ocorrencia.qualidadeRelacionamento.toUpperCase()}): Perda de ${pontosPerdidos} pontos`;
-                    } else {
-                        mensagem = `${config.nome}: ${ocorrencia.quantidade} ocorrência(s) - Perda de ${pontosPerdidos} pontos`;
-                    }
-
-                    feedback.push({
-                        tipo: 'perda',
-                        mensagem: mensagem
-                    });
+                    const mes = parseInt(periodo);
+                    const mesOcorrencia = dataOcorrencia.getMonth() + 1;
+                    return anoOcorrencia === ano && mesOcorrencia === mes;
                 }
             });
             
+            
+            let pontuacaoFinal = 100;
+            const resumoOcorrenciasAposFiltro = {};
+            const feedback = [];
+            
+            // 2. Aplicar a lógica de penalidade
+            
+            Object.keys(configuracoes).forEach(tipo => {
+                const config = configuracoes[tipo];
+                const ocorrenciasDoTipo = ocorrenciasLider.filter(oc => oc.tipo === tipo);
+
+                if (ocorrenciasDoTipo.length === 0) return;
+                
+                if (tipo === 'notaLimpeza') {
+                    // Nota de limpeza é penalizada se QUALQUER nota estiver abaixo da meta (filter já removeu as dentro da meta)
+                    if (ocorrenciasDoTipo.length > 0) {
+                         const pontos = config.peso;
+                         pontuacaoFinal -= pontos;
+                         resumoOcorrenciasAposFiltro[tipo] = {
+                            nome: config.nome,
+                            // Mostra a quantidade total de ocorrências registradas que geraram penalidade (abaixo da meta)
+                            quantidade: ocorrenciasDoTipo.length, 
+                            pontosPerdidos: pontos
+                         };
+                         feedback.push({ tipo: 'perda', mensagem: `${config.nome}: Nota(s) abaixo de ${config.meta} - Perda de ${pontos} pontos` });
+                    } 
+                    
+                } else if (tipo === 'relacionamento') {
+                    // Penalidade por relacionamento mediano/ruim (filter já removeu os 'bom')
+                    let totalPontosPerdidosRelac = 0;
+                    let numOcorrenciasPenalizaveis = 0;
+
+                    ocorrenciasDoTipo.forEach(oc => {
+                        let pontosPerdidosRelac = 0;
+                        switch(oc.qualidadeRelacionamento) {
+                            case 'mediano': 
+                                pontosPerdidosRelac = config.peso * 0.5; // 50% do peso
+                                break;
+                            case 'ruim': 
+                                pontosPerdidosRelac = config.peso; // 100% do peso
+                                break;
+                        }
+                        
+                        if (pontosPerdidosRelac > 0) {
+                            totalPontosPerdidosRelac += pontosPerdidosRelac;
+                            numOcorrenciasPenalizaveis++;
+                            feedback.push({ tipo: 'perda', mensagem: `${config.nome} (${oc.qualidadeRelacionamento.toUpperCase()}): Perda de ${pontosPerdidosRelac} pontos` });
+                        }
+                    });
+                    
+                    if (totalPontosPerdidosRelac > 0) {
+                        pontuacaoFinal -= totalPontosPerdidosRelac;
+                        resumoOcorrenciasAposFiltro[tipo] = {
+                            nome: config.nome, 
+                            quantidade: numOcorrenciasPenalizaveis,
+                            pontosPerdidos: totalPontosPerdidosRelac
+                        };
+                    }
+                    
+
+                } else if (config.limite !== undefined) {
+                    // Penalidade por ocorrências que excedem o limite
+                    const totalOcorrencias = ocorrenciasDoTipo.length;
+                    
+                    if (totalOcorrencias > config.limite) {
+                        const ocorrenciasPenalizaveis = totalOcorrencias - config.limite;
+                        const pontos = config.peso * ocorrenciasPenalizaveis;
+                        pontuacaoFinal -= pontos;
+                        
+                        resumoOcorrenciasAposFiltro[tipo] = {
+                            nome: config.nome,
+                            quantidade: totalOcorrencias,
+                            pontosPerdidos: pontos
+                        };
+                        feedback.push({ tipo: 'perda', mensagem: `${config.nome}: ${totalOcorrencias} ocorrência(s) (Limite ${config.limite}) - Perda de ${pontos} pontos` });
+                    } else if (totalOcorrencias > 0) {
+                        // Apenas para mostrar o resumo, mesmo sem perda
+                        resumoOcorrenciasAposFiltro[tipo] = {
+                            nome: config.nome,
+                            quantidade: totalOcorrencias,
+                            pontosPerdidos: 0
+                        };
+                    }
+                }
+            });
+            
+            // 3. Exibir o resultado
             pontuacaoFinal = Math.max(0, pontuacaoFinal);
             
             document.getElementById('pontuacaoFinal').textContent = Math.round(pontuacaoFinal);
             
-            let periodoTexto = '';
-            switch(periodo) {
-                case 'hoje': periodoTexto = 'Hoje'; break;
-                case 'semana': periodoTexto = 'Últimos 7 dias'; break;
-                case 'mes': periodoTexto = 'Últimos 30 dias'; break;
-                case 'todos': periodoTexto = 'Todo o Período'; break;
-            }
+            let periodoTexto = periodo === 'anual' ? `Ano ${ano}` : `${obterNomeMes(parseInt(periodo))}/${ano}`;
             document.getElementById('periodoAvaliacao').textContent = `Período: ${periodoTexto}`;
             
             const feedbackContainer = document.getElementById('feedbackDetalhado');
@@ -1754,14 +1995,17 @@
             const tabelaResumo = document.getElementById('tabelaResumoOcorrencias').querySelector('tbody');
             tabelaResumo.innerHTML = '';
             
-            Object.values(resumoOcorrencias).forEach(resumo => {
+            Object.values(resumoOcorrenciasAposFiltro).forEach(resumo => {
                 const linha = document.createElement('tr');
                 let quantidadeTexto = resumo.quantidade;
+                if (resumo.nome.includes('Nota da Organização')) {
+                    // Para nota de limpeza, a quantidade é o número de notas abaixo da meta que geraram a penalidade
+                }
 
                 linha.innerHTML = `
                     <td>${resumo.nome}</td>
                     <td>${quantidadeTexto}</td>
-                    <td>${resumo.pontosPerdidos}</td>
+                    <td>${resumo.pontosPerdidos.toFixed(1).replace('.', ',')}</td>
                 `;
                 tabelaResumo.appendChild(linha);
             });
@@ -1769,7 +2013,8 @@
             document.getElementById('resultadoContainer').style.display = 'block';
             document.getElementById('semDadosResultado').style.display = 'none';
             
-            if (pontuacaoFinal === 100) {
+            if (pontuacaoFinal === 100 && ocorrenciasLider.length > 0) {
+                 // Apenas dispara o toast se houver dados no período, mas a pontuação for 100
                  mostrarToast(`Parabéns! ${lider} alcançou a pontuação máxima (100) no período!`, 'success');
             }
         }
@@ -1777,95 +2022,98 @@
         // FUNÇÃO NOVA: Comparativo entre Líderes
         function gerarComparativoLideres() {
             const periodo = document.getElementById('periodoComparativo').value;
+            const ano = parseInt(document.getElementById('anoComparativo').value);
             const ordenacao = document.getElementById('ordenacaoComparativo').value;
             const lideres = JSON.parse(localStorage.getItem('lideres'));
             const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
             const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
 
-            if (lideres.length === 0) {
+            if (lideres.length === 0 || isNaN(ano)) {
                 document.getElementById('leadersGrid').innerHTML = '';
                 document.getElementById('semDadosComparativo').style.display = 'block';
                 document.getElementById('tabelaComparativaBody').innerHTML = '';
+                gerarGraficoComparativo([]);
                 return;
             }
 
             const dadosLideres = lideres.map(lider => {
-                let ocorrenciasLider = ocorrencias.filter(oc => oc.lider === lider && !oc.dentroDaMeta); // Excluir ocorrências dentro da meta
-                let todasOcorrenciasLider = ocorrencias.filter(oc => oc.lider === lider); // Incluir todas para contagem
-                
-                if (periodo !== 'todos') {
-                    const hoje = new Date();
-                    let dataInicio;
-                    
-                    switch(periodo) {
-                        case 'hoje':
-                            dataInicio = new Date(hoje.toISOString().split('T')[0]);
-                            break;
-                        case 'semana':
-                            dataInicio = new Date(hoje);
-                            dataInicio.setDate(hoje.getDate() - 7);
-                            break;
-                        case 'mes':
-                            dataInicio = new Date(hoje);
-                            dataInicio.setMonth(hoje.getMonth() - 1);
-                            break;
+                // Filtra apenas ocorrências que geram penalidade (ou seja, que não estão 'dentro da meta')
+                let ocorrenciasLider = ocorrencias.filter(oc => oc.lider === lider && !oc.dentroDaMeta); 
+
+                // Filtro por período (Mês ou Anual)
+                ocorrenciasLider = ocorrenciasLider.filter(oc => {
+                    const dataOcorrencia = new Date(oc.data);
+                    const anoOcorrencia = dataOcorrencia.getFullYear();
+
+                    if (periodo === 'anual') {
+                        return anoOcorrencia === ano;
+                    } else {
+                        const mes = parseInt(periodo);
+                        const mesOcorrencia = dataOcorrencia.getMonth() + 1;
+                        return anoOcorrencia === ano && mesOcorrencia === mes;
                     }
-                    
-                    dataInicio.setHours(0, 0, 0, 0);
-                    ocorrenciasLider = ocorrenciasLider.filter(oc => {
-                        const dataOcorrencia = new Date(oc.data);
-                        return dataOcorrencia.getTime() >= dataInicio.getTime();
-                    });
-                    todasOcorrenciasLider = todasOcorrenciasLider.filter(oc => {
-                        const dataOcorrencia = new Date(oc.data);
-                        return dataOcorrencia.getTime() >= dataInicio.getTime();
-                    });
-                }
+                });
                 
                 let pontuacao = 100;
-                const resumoOcorrencias = {};
-                let totalOcorrencias = 0;
-                let quantidadeRegistrada = 0;
+                // Resumo de ocorrências que entraram no cálculo (para visualização)
+                const resumoOcorrenciasCalculo = {}; 
+                let totalOcorrencias = 0; // Total de ocorrências que geraram penalidade (ou que entraram na conta do limite)
                 
-                ocorrenciasLider.forEach(ocorrencia => {
-                    const config = configuracoes[ocorrencia.tipo];
-                    let pontosPerdidos = 0;
+                // --- LÓGICA DE PENALIDADE ---
+                
+                Object.keys(configuracoes).forEach(tipo => {
+                    const config = configuracoes[tipo];
+                    // Filtrar apenas as ocorrências que sobraram no período/lider/não-dentro-da-meta
+                    const ocorrenciasDoTipo = ocorrenciasLider.filter(oc => oc.tipo === tipo); 
                     
-                    if (ocorrencia.tipo === 'notaLimpeza') {
-                        if (ocorrencia.quantidade < config.meta) {
-                            pontosPerdidos = config.peso;
+                    if (ocorrenciasDoTipo.length === 0) return;
+                    
+                    if (tipo === 'notaLimpeza') {
+                        // Se houver notas abaixo da meta (filtro já feito em ocorrenciasLider)
+                        if (ocorrenciasDoTipo.length > 0) {
+                            const pontos = config.peso;
+                            pontuacao -= pontos;
+                            // No resumo, mostramos o número de notas abaixo da meta
+                            resumoOcorrenciasCalculo[tipo] = (resumoOcorrenciasCalculo[tipo] || 0) + ocorrenciasDoTipo.length;
+                            totalOcorrencias += ocorrenciasDoTipo.length; 
                         }
-                    } else if (ocorrencia.tipo === 'relacionamento') {
-                        switch(ocorrencia.qualidadeRelacionamento) {
-                            case 'mediano': pontosPerdidos = config.peso * 0.5; break;
-                            case 'ruim': pontosPerdidos = config.peso; break;
+
+                    } else if (tipo === 'relacionamento') {
+                        // Contabiliza apenas as que geram penalidade (mediano/ruim)
+                        ocorrenciasDoTipo.forEach(oc => {
+                            let pontosPerdidosRelac = 0;
+                            switch(oc.qualidadeRelacionamento) {
+                                case 'mediano': pontosPerdidosRelac = config.peso * 0.5; break;
+                                case 'ruim': pontosPerdidosRelac = config.peso; break;
+                            }
+                            
+                            if (pontosPerdidosRelac > 0) {
+                                pontuacao -= pontosPerdidosRelac;
+                                resumoOcorrenciasCalculo[tipo] = (resumoOcorrenciasCalculo[tipo] || 0) + 1;
+                                totalOcorrencias += 1;
+                            }
+                        });
+
+                    } else if (config.limite !== undefined && !config.acompanhamento) { // Ignora tipos de acompanhamento (ex: atestado)
+                        const totalOcorrenciasTipo = ocorrenciasDoTipo.length;
+                        
+                        if (totalOcorrenciasTipo > config.limite) {
+                            const ocorrenciasPenalizaveis = totalOcorrenciasTipo - config.limite;
+                            const pontos = config.peso * ocorrenciasPenalizaveis;
+                            pontuacao -= pontos;
                         }
-                    } else {
-                        if (ocorrencia.quantidade > config.limite) {
-                            pontosPerdidos = config.peso * (ocorrencia.quantidade - config.limite);
-                        }
+                        
+                        // Conta todas as ocorrências no resumo para fins de exibição
+                        resumoOcorrenciasCalculo[tipo] = (resumoOcorrenciasCalculo[tipo] || 0) + totalOcorrenciasTipo;
+                        totalOcorrencias += totalOcorrenciasTipo;
                     }
-                    
-                    pontuacao -= pontosPerdidos;
-                    totalOcorrencias += 1;
-                    quantidadeRegistrada += ocorrencia.quantidade;
-                    
-                    if (!resumoOcorrencias[ocorrencia.tipo]) {
-                        resumoOcorrencias[ocorrencia.tipo] = 0;
-                    }
-                    resumoOcorrencias[ocorrencia.tipo] += ocorrencia.quantidade;
                 });
                 
-                // Adicionar contagem de todas as ocorrências (incluindo dentro da meta)
-                todasOcorrenciasLider.forEach(ocorrencia => {
-                    if (ocorrencia.dentroDaMeta) {
-                        quantidadeRegistrada += ocorrencia.quantidade;
-                    }
-                });
+                // --- FIM LÓGICA DE PENALIDADE ---
                 
                 pontuacao = Math.max(0, Math.round(pontuacao));
                 
-                let classificacao = 'critical';
+                let classificacao = 'Crítico';
                 let classeCSS = 'critical';
                 
                 if (pontuacao >= 90) {
@@ -1885,10 +2133,10 @@
                     classeCSS = 'critical';
                 }
                 
-                const principaisOcorrencias = Object.entries(resumoOcorrencias)
-                    .sort((a, b) => b[1] - a[1])
+                const principaisOcorrencias = Object.entries(resumoOcorrenciasCalculo)
+                    .sort((a, b) => b[1] - a[1]) // Ordena pela quantidade de ocorrências
                     .slice(0, 2)
-                    .map(([tipo, quantidade]) => `${configuracoes[tipo].nome}: ${quantidade}`)
+                    .map(([tipo, quantidade]) => `${configuracoes[tipo].nome.split(' ')[0]}: ${quantidade}`) // Pega a primeira palavra
                     .join(', ');
                 
                 return {
@@ -1897,12 +2145,27 @@
                     classificacao: classificacao,
                     classeCSS: classeCSS,
                     totalOcorrencias: totalOcorrencias,
-                    quantidadeRegistrada: quantidadeRegistrada,
-                    principaisOcorrencias: principaisOcorrencias || 'Nenhuma ocorrência',
-                    resumoOcorrencias: resumoOcorrencias
+                    principaisOcorrencias: principaisOcorrencias || 'Nenhuma ocorrência'
                 };
+            }).filter(lider => {
+                 // Filtra líderes que não têm ocorrências NO PERÍODO e não atingiram a pontuação máxima
+                 const ocorrenciasNoPeriodo = ocorrencias.filter(oc => oc.lider === lider.nome);
+
+                 let temDadosNoPeriodo = false;
+                 if (periodo === 'anual') {
+                    temDadosNoPeriodo = ocorrenciasNoPeriodo.some(oc => new Date(oc.data).getFullYear() === ano);
+                 } else {
+                    const mes = parseInt(periodo);
+                    temDadosNoPeriodo = ocorrenciasNoPeriodo.some(oc => 
+                        new Date(oc.data).getFullYear() === ano && 
+                        new Date(oc.data).getMonth() + 1 === mes
+                    );
+                 }
+
+                 return lideres.includes(lider.nome) && (temDadosNoPeriodo || lider.pontuacao === 100);
             });
             
+            // 2. Ordenar
             dadosLideres.sort((a, b) => {
                 switch(ordenacao) {
                     case 'nome':
@@ -1915,6 +2178,7 @@
                 }
             });
             
+            // 3. Renderizar Cards
             const leadersGrid = document.getElementById('leadersGrid');
             leadersGrid.innerHTML = '';
             
@@ -1933,13 +2197,14 @@
                     </div>
                     <div class="leader-details">
                         <div><strong>Classificação:</strong> ${lider.classificacao}</div>
-                        <div><strong>Total de Ocorrências:</strong> ${lider.totalOcorrencias}</div>
+                        <div><strong>Total de Registros:</strong> ${lider.totalOcorrencias}</div>
                         <div><strong>Principais:</strong> ${lider.principaisOcorrencias}</div>
                     </div>
                 `;
                 leadersGrid.appendChild(card);
             });
             
+            // 4. Renderizar Tabela
             const tabelaBody = document.getElementById('tabelaComparativaBody');
             tabelaBody.innerHTML = '';
             
@@ -1960,18 +2225,15 @@
                 tabelaBody.appendChild(linha);
             });
             
+            // 5. Gerar Gráfico
             gerarGraficoComparativo(dadosLideres);
             
-            document.getElementById('semDadosComparativo').style.display = 'none';
+            document.getElementById('semDadosComparativo').style.display = dadosLideres.length === 0 ? 'block' : 'none';
         }
 
         // FUNÇÃO NOVA: Gráfico Comparativo
         function gerarGraficoComparativo(dadosLideres) {
             const ctx = document.getElementById('graficoComparativo').getContext('2d');
-            
-            if (chartComparativo) {
-                chartComparativo.destroy();
-            }
             
             const labels = dadosLideres.map(lider => lider.nome);
             const pontuacoes = dadosLideres.map(lider => lider.pontuacao);
@@ -1986,71 +2248,81 @@
                 }
             });
             
-            chartComparativo = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Pontuação',
-                        data: pontuacoes,
-                        backgroundColor: cores,
-                        borderColor: cores.map(cor => cor.replace('0.8', '1')),
-                        borderWidth: 2,
-                        borderRadius: 4,
-                        borderSkipped: false,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        title: {
-                            display: true,
-                            text: 'Comparativo de Pontuações entre Líderes',
-                            font: {
-                                size: 16
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const lider = dadosLideres[context.dataIndex];
-                                    return `Pontuação: ${lider.pontuacao} - ${lider.classificacao}`;
+            if (chartComparativo) {
+                // Se o gráfico já existe, apenas atualiza os dados
+                chartComparativo.data.labels = labels;
+                chartComparativo.data.datasets[0].data = pontuacoes;
+                chartComparativo.data.datasets[0].backgroundColor = cores;
+                chartComparativo.data.datasets[0].borderColor = cores.map(cor => cor.replace('0.8', '1'));
+                chartComparativo.update();
+            } else {
+                 // Caso contrário, cria um novo gráfico
+                chartComparativo = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Pontuação',
+                            data: pontuacoes,
+                            backgroundColor: cores,
+                            borderColor: cores.map(cor => cor.replace('0.8', '1')),
+                            borderWidth: 2,
+                            borderRadius: 4,
+                            borderSkipped: false,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Comparativo de Pontuações entre Líderes',
+                                font: {
+                                    size: 16
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const lider = dadosLideres[context.dataIndex];
+                                        return `Pontuação: ${lider.pontuacao} - ${lider.classificacao}`;
+                                    }
                                 }
                             }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100,
-                            title: {
-                                display: true,
-                                text: 'Pontuação'
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                title: {
+                                    display: true,
+                                    text: 'Pontuação'
+                                },
+                                grid: {
+                                    color: 'rgba(0,0,0,0.1)'
+                                }
                             },
-                            grid: {
-                                color: 'rgba(0,0,0,0.1)'
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Líderes'
+                                },
+                                grid: {
+                                    display: false
+                                }
                             }
                         },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Líderes'
-                            },
-                            grid: {
-                                display: false
-                            }
+                        animation: {
+                            duration: 1000,
+                            easing: 'easeOutQuart'
                         }
-                    },
-                    animation: {
-                        duration: 1000,
-                        easing: 'easeOutQuart'
                     }
-                }
-            });
+                });
+            }
         }
 
         function preencherAnosRelatorios() {
@@ -2067,338 +2339,108 @@
             
             const anosOrdenados = Array.from(anos).sort((a, b) => b - a);
             
-            const selectsAno = ['anoRelatorio', 'anoRelatorioAnual'];
+            // Seleciona os selects de ano em todas as abas
+            const selectsAno = ['anoResultado', 'anoComparativo', 'filtroAnoHistorico'];
             selectsAno.forEach(selectId => {
                 const select = document.getElementById(selectId);
-                select.innerHTML = '';
-                
-                anosOrdenados.forEach(ano => {
-                    const option = document.createElement('option');
-                    option.value = ano;
-                    option.textContent = ano;
-                    select.appendChild(option);
-                });
-            });
-            
-            document.getElementById('anoRelatorio').value = anoAtual;
-            document.getElementById('anoRelatorioAnual').value = anoAtual;
-        }
-
-        function gerarRelatorioDiario() {
-            const data = document.getElementById('dataRelatorioDiario').value;
-            const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
-            const container = document.getElementById('relatorioDiarioContainer');
-            
-            relatorioAtivo = { tipo: 'diario', data: data };
-            
-            const ocorrenciasDia = ocorrencias.filter(oc => oc.data === data);
-            
-            if (ocorrenciasDia.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 20px; color: var(--gray-500);">
-                        <i class="fas fa-clipboard-list" style="font-size: 36px; margin-bottom: 12px;"></i>
-                        <p>Nenhuma ocorrência registrada em ${formatarData(data)}</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            const ocorrenciasPorLider = {};
-            ocorrenciasDia.forEach(oc => {
-                if (!ocorrenciasPorLider[oc.lider]) {
-                    ocorrenciasPorLider[oc.lider] = [];
-                }
-                ocorrenciasPorLider[oc.lider].push(oc);
-            });
-            
-            let html = `<h4 id="relatorioDiarioTitle">Relatório Diário - ${formatarData(data)}</h4>`;
-            
-            Object.keys(ocorrenciasPorLider).forEach(lider => {
-                html += `<h5 style="margin-top: 16px;">${lider}</h5>`;
-                html += `<div class="table-container"><table class="table" id="tabelaRelatorioDiario-${lider.replace(/\s/g, '')}"><thead><tr><th>Tipo</th><th>Quantidade/Qualidade</th><th>Descrição</th><th>Status</th></tr></thead><tbody>`;
-                
-                ocorrenciasPorLider[lider].forEach(oc => {
-                    const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
-                    const config = configuracoes[oc.tipo];
-
-                    let quantidadeTexto = oc.quantidade;
-                    if (oc.tipo === 'relacionamento') {
-                        switch(oc.qualidadeRelacionamento) {
-                            case 'bom': quantidadeTexto = 'Bom'; break;
-                            case 'mediano': quantidadeTexto = 'Mediano'; break;
-                            case 'ruim': quantidadeTexto = 'Ruim'; break;
-                            default: quantidadeTexto = 'Não especificado';
-                        }
-                    }
+                if (select) {
+                    select.innerHTML = '';
                     
-                    let status = 'Ocorrência';
-                    if (oc.dentroDaMeta) {
-                        status = '<span style="color: var(--success-color);">Dentro da Meta</span>';
-                    }
-                    
-                    html += `<tr>
-                        <td>${config.nome}</td>
-                        <td>${quantidadeTexto}</td>
-                        <td>${oc.descricao || '-'}</td>
-                        <td>${status}</td>
-                    </tr>`;
-                });
-                
-                html += `</tbody></table></div>`;
-            });
-            
-            container.innerHTML = html;
-        }
-
-        function gerarRelatorioMensal() {
-            const mes = parseInt(document.getElementById('mesRelatorio').value);
-            const ano = parseInt(document.getElementById('anoRelatorio').value);
-            const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
-            const container = document.getElementById('relatorioMensalContainer');
-            
-            relatorioAtivo = { tipo: 'mensal', mes: mes, ano: ano };
-            
-            const ocorrenciasMes = ocorrencias.filter(oc => {
-                const data = new Date(oc.data);
-                return data.getMonth() + 1 === mes && data.getFullYear() === ano;
-            });
-            
-            const nomeMes = obterNomeMes(mes);
-            
-            if (ocorrenciasMes.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 20px; color: var(--gray-500);">
-                        <i class="fas fa-clipboard-list" style="font-size: 36px; margin-bottom: 12px;"></i>
-                        <p>Nenhuma ocorrência registrada em ${nomeMes}/${ano}</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            const resumoMensal = {};
-            ocorrenciasMes.forEach(oc => {
-                if (!resumoMensal[oc.lider]) {
-                    resumoMensal[oc.lider] = {};
-                }
-                if (!resumoMensal[oc.lider][oc.tipo]) {
-                    resumoMensal[oc.lider][oc.tipo] = 0;
-                }
-                
-                resumoMensal[oc.lider][oc.tipo] += 1;
-            });
-            
-            let html = `<h4 id="relatorioMensalTitle">Relatório Mensal - ${nomeMes}/${ano}</h4>`;
-            html += `<div class="table-container"><table class="table" id="tabelaRelatorioMensal"><thead><tr><th>Líder</th>`;
-            
-            const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
-            const tiposOrdenados = Object.keys(configuracoes);
-            
-            tiposOrdenados.forEach(tipo => {
-                html += `<th>${configuracoes[tipo].nome}</th>`;
-            });
-            
-            html += `<th>Total</th></tr></thead><tbody>`;
-            
-            Object.keys(resumoMensal).forEach(lider => {
-                html += `<tr><td>${lider}</td>`;
-                let totalLider = 0;
-                
-                tiposOrdenados.forEach(tipo => {
-                    const quantidade = resumoMensal[lider][tipo] || 0;
-                    html += `<td>${quantidade}</td>`;
-                    totalLider += quantidade;
-                });
-                
-                html += `<td><strong>${totalLider}</strong></td></tr>`;
-            });
-            
-            html += `<tr><td><strong>Total</strong></td>`;
-            let totalGeral = 0;
-            
-            tiposOrdenados.forEach(tipo => {
-                let totalTipo = 0;
-                Object.keys(resumoMensal).forEach(lider => {
-                    totalTipo += resumoMensal[lider][tipo] || 0;
-                });
-                html += `<td><strong>${totalTipo}</strong></td>`;
-                totalGeral += totalTipo;
-            });
-            
-            html += `<td><strong>${totalGeral}</strong></td></tr>`;
-            html += `</tbody></table></div>`;
-            
-            container.innerHTML = html;
-        }
-
-        function gerarRelatorioAnual() {
-            const ano = parseInt(document.getElementById('anoRelatorioAnual').value);
-            const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
-            const container = document.getElementById('relatorioAnualContainer');
-            
-            relatorioAtivo = { tipo: 'anual', ano: ano };
-            
-            const ocorrenciasAno = ocorrencias.filter(oc => {
-                const data = new Date(oc.data);
-                return data.getFullYear() === ano;
-            });
-            
-            if (ocorrenciasAno.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 20px; color: var(--gray-500);">
-                        <i class="fas fa-clipboard-list" style="font-size: 36px; margin-bottom: 12px;"></i>
-                        <p>Nenhuma ocorrência registrada em ${ano}</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            const resumoAnual = {};
-            ocorrenciasAno.forEach(oc => {
-                const data = new Date(oc.data);
-                const mes = data.getMonth() + 1;
-                
-                if (!resumoAnual[mes]) {
-                    resumoAnual[mes] = {};
-                }
-                if (!resumoAnual[mes][oc.tipo]) {
-                    resumoAnual[mes][oc.tipo] = 0;
-                }
-                
-                resumoAnual[mes][oc.tipo] += 1;
-            });
-            
-            let html = `<h4 id="relatorioAnualTitle">Relatório Anual - ${ano}</h4>`;
-            html += `<div class="table-container"><table class="table" id="tabelaRelatorioAnual"><thead><tr><th>Mês</th>`;
-            
-            const configuracoes = JSON.parse(localStorage.getItem('configuracoes'));
-            const tiposOrdenados = Object.keys(configuracoes);
-            
-            tiposOrdenados.forEach(tipo => {
-                html += `<th>${configuracoes[tipo].nome}</th>`;
-            });
-            
-            html += `<th>Total</th></tr></thead><tbody>`;
-            
-            for (let mes = 1; mes <= 12; mes++) {
-                if (resumoAnual[mes] || true) {
-                    const mesTemDados = !!resumoAnual[mes];
-                    html += `<tr><td>${obterNomeMes(mes)}</td>`;
-                    let totalMes = 0;
-                    
-                    tiposOrdenados.forEach(tipo => {
-                        const quantidade = resumoAnual[mes] ? resumoAnual[mes][tipo] || 0 : 0;
-                        html += `<td>${quantidade}</td>`;
-                        totalMes += quantidade;
+                    anosOrdenados.forEach(ano => {
+                        const option = document.createElement('option');
+                        option.value = ano;
+                        option.textContent = ano;
+                        select.appendChild(option);
                     });
                     
-                    html += `<td><strong>${totalMes}</strong></td></tr>`;
-                }
-            }
-            
-            html += `<tr><td><strong>Total Anual</strong></td>`;
-            let totalGeral = 0;
-            
-            tiposOrdenados.forEach(tipo => {
-                let totalTipo = 0;
-                for (let mes = 1; mes <= 12; mes++) {
-                    if (resumoAnual[mes]) {
-                        totalTipo += resumoAnual[mes][tipo] || 0;
+                    // Define o ano atual como padrão, se existir.
+                    const anoAtualStr = anoAtual.toString();
+                    if (anos.has(anoAtual) && select.querySelector(`option[value="${anoAtualStr}"]`)) {
+                        select.value = anoAtualStr;
+                    } else if (anosOrdenados.length > 0) {
+                        select.value = anosOrdenados[0].toString();
                     }
                 }
-                html += `<td><strong>${totalTipo}</strong></td>`;
-                totalGeral += totalTipo;
             });
-            
-            html += `<td><strong>${totalGeral}</strong></td></tr>`;
-            html += `</tbody></table></div>`;
-            
-            container.innerHTML = html;
         }
+        
+        // FUNÇÃO ATUALIZADA para gerar Screenshot (Print) em PDF com Alta Resolução e A4
+        async function exportarRelatorioPDF() {
+            // Fechar menu após clique
+            document.getElementById('exportDropdown').classList.remove('active');
 
-        function exportarRelatorioPDF() {
+            const content = document.getElementById('comparativoContentToPrint');
+            const periodoExportacao = document.getElementById('periodoComparativo').value;
+            const anoExportacao = document.getElementById('anoComparativo').value;
+            const periodoTexto = periodoExportacao === 'anual' ? `Ano ${anoExportacao}` : `${obterNomeMes(parseInt(periodoExportacao))}/${anoExportacao}`;
+            const fileName = `Relatorio_Comparativo_${periodoExportacao}_${anoExportacao}.pdf`;
+
+            if (!content) {
+                mostrarToast('Conteúdo de comparação não encontrado.', 'danger');
+                return;
+            }
+
+            mostrarToast('Gerando PDF...', 'info');
+
+            // 1. Criar o canvas com o conteúdo da tela (Scale 3 ou 4 para altíssima resolução)
+            const canvas = await html2canvas(content, {
+                scale: 3, // Aumentado para 3 para melhor resolução
+                logging: false,
+                useCORS: true,
+                ignoreElements: (element) => element.classList.contains('export-menu-container')
+            });
+
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            
+            // Dimensões A4 em modo paisagem (842 x 595 pontos)
+            const pdfWidth = 842; 
+            const pdfHeight = 595.28;
+            
+            // Calcula a altura que a imagem ocupará mantendo a proporção, ajustada à largura A4
+            const ratio = pdfWidth / canvas.width;
+            const imgHeight = canvas.height * ratio;
+            let heightLeft = imgHeight;
+
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('l', 'pt', 'a4');
-            
-            let title = "Relatório de Liderança";
-            let tableElement = null;
+            const doc = new jsPDF('l', 'pt', 'a4'); // Modo Paisagem
 
-            if (relatorioAtivo.tipo === 'mensal') {
-                title = `Relatório Mensal - ${obterNomeMes(relatorioAtivo.mes)}/${relatorioAtivo.ano}`;
-                tableElement = document.getElementById('tabelaRelatorioMensal');
-            } else if (relatorioAtivo.tipo === 'anual') {
-                title = `Relatório Anual - ${relatorioAtivo.ano}`;
-                tableElement = document.getElementById('tabelaRelatorioAnual');
-            } else if (relatorioAtivo.tipo === 'diario') {
-                title = `Relatório Diário - ${formatarData(relatorioAtivo.data)}`;
-                const container = document.getElementById('relatorioDiarioContainer');
-                
-                doc.text(title, 40, 40);
-                
-                let finalY = 60;
-                const tables = container.querySelectorAll('table');
-                
-                if (tables.length === 0) {
-                     mostrarToast('Nenhuma tabela para exportar no Relatório Diário.', 'warning');
-                     return;
-                }
-                
-                tables.forEach((table) => {
-                    const leaderTitle = table.closest('.table-container').previousElementSibling.textContent;
-                    doc.text(leaderTitle, 40, finalY);
-                    
-                    doc.autoTable({ 
-                        html: table, 
-                        startY: finalY + 15,
-                        theme: 'grid'
-                    });
-                    
-                    finalY = doc.lastAutoTable.finalY + 20;
-                });
-                
-                doc.save(`Relatorio_Diario_${relatorioAtivo.data}.pdf`);
-                mostrarToast('Relatório PDF gerado com sucesso!', 'success');
-                return;
+            let position = 0;
+
+            // 2. Adicionar a imagem ao PDF (com tratamento de múltiplas páginas para scroll)
+            doc.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+            heightLeft -= pdfHeight;
+
+            while (heightLeft > 0) {
+                position = heightLeft - imgHeight;
+                doc.addPage();
+                doc.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+                heightLeft -= pdfHeight;
             }
 
-            if (!tableElement) {
-                mostrarToast('Nenhuma tabela de relatório encontrada para exportação. Gere o relatório primeiro.', 'warning');
-                return;
-            }
-            
-            doc.text(title, 40, 40);
-            doc.autoTable({ 
-                html: tableElement, 
-                startY: 60,
-                theme: 'grid'
-            });
-            
-            doc.save(`Relatorio_${relatorioAtivo.tipo}_Lideranca.pdf`);
+            doc.save(fileName);
             mostrarToast('Relatório PDF gerado com sucesso!', 'success');
         }
 
+        // A função exportarRelatorioExcel foi mantida (exporta apenas a tabela)
         function exportarRelatorioExcel() {
-            let tableElement = null;
-            let fileName = 'Relatorio_Lideranca.xls';
-            let titleElement = null;
-
-            if (relatorioAtivo.tipo === 'mensal') {
-                tableElement = document.getElementById('tabelaRelatorioMensal');
-                titleElement = document.getElementById('relatorioMensalTitle');
-                fileName = `Relatorio_Mensal_${relatorioAtivo.mes}_${relatorioAtivo.ano}.xls`;
-            } else if (relatorioAtivo.tipo === 'anual') {
-                tableElement = document.getElementById('tabelaRelatorioAnual');
-                titleElement = document.getElementById('relatorioAnualTitle');
-                fileName = `Relatorio_Anual_${relatorioAtivo.ano}.xls`;
-            } else if (relatorioAtivo.tipo === 'diario') {
-                tableElement = document.getElementById('relatorioDiarioContainer');
-                titleElement = document.getElementById('relatorioDiarioTitle');
-                fileName = `Relatorio_Diario_${relatorioAtivo.data}.xls`;
-            }
-
-            if (!tableElement) {
-                mostrarToast('Nenhuma tabela de relatório encontrada para exportação. Gere o relatório primeiro.', 'warning');
+            // Fechar menu após clique
+            document.getElementById('exportDropdown').classList.remove('active');
+            
+            const tabelaComparativa = document.getElementById('tabelaComparativa');
+            
+            if (!tabelaComparativa) {
+                mostrarToast('A tabela de comparação não está visível. Recarregue a análise.', 'warning');
                 return;
             }
+
+            // Usar os campos da aba Comparativo para definir o título e nome do arquivo
+            const periodoExportacao = document.getElementById('periodoComparativo').value;
+            const anoExportacao = document.getElementById('anoComparativo').value;
+            
+            // Formatar o período para o título
+            const periodoTexto = periodoExportacao === 'anual' ? `Ano ${anoExportacao}` : `${obterNomeMes(parseInt(periodoExportacao))}/${anoExportacao}`;
+            const title = `Relatório Comparativo de Líderes - Período: ${periodoTexto}`;
+            const fileName = `Relatorio_Comparativo_${periodoExportacao}_${anoExportacao}.xls`;
 
             let exportHtml = `
                 <html>
@@ -2410,8 +2452,8 @@
                         </style>
                     </head>
                     <body>
-                        <h1>${titleElement ? titleElement.textContent : 'Relatório'}</h1>
-                        ${tableElement.outerHTML}
+                        <h1>${title}</h1>
+                        ${tabelaComparativa.outerHTML}
                     </body>
                 </html>`;
 
@@ -2485,6 +2527,8 @@
 
         function atualizarConfiguracoes() {
             // Implementação para carregar configurações
+            // Como o sistema está configurado para usar o localStorage diretamente, essa função permanece como placeholder,
+            // mas é chamada para garantir que o 'configuracoes' esteja no localStorage.
         }
 
         function mostrarModalConfirmacao() {
@@ -2523,20 +2567,19 @@
             evt.currentTarget.setAttribute('aria-selected', 'true');
             
             if (tabName === 'resultado') {
-                document.getElementById('selectLiderResultado').value = '';
-                document.getElementById('resultadoContainer').style.display = 'none';
-                document.getElementById('semDadosResultado').style.display = 'block';
+                // Ao mudar para a aba de resultado, recalculamos
+                calcularResultadoLider();
             } else if (tabName === 'comparativo') {
                 gerarComparativoLideres();
             } else if (tabName === 'historico') {
                 carregarHistorico();
-            } else if (tabName === 'relatorios') {
-                gerarRelatorioMensal();
             }
         }
 
         function formatarData(dataString) {
             const data = new Date(dataString);
+            // Corrige o bug de fuso horário que o new Date(YYYY-MM-DD) pode introduzir, forçando a data correta
+            data.setDate(data.getDate() + 1); 
             return data.toLocaleDateString('pt-BR');
         }
 
@@ -2550,7 +2593,11 @@
                 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
                 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
             ];
-            return meses[mes - 1];
+            const mesInt = parseInt(mes);
+            if (mesInt >= 1 && mesInt <= 12) {
+                return meses[mesInt - 1];
+            }
+            return 'Anual';
         }
 
         function mostrarErro(campoId, mensagem) {
