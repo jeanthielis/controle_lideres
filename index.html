@@ -861,63 +861,10 @@
                                     Registro de Ocorrências Diárias
                                 </h2>
                                 
-                                <div class="ocorrencia-form">
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="selectLiderOcorrencia" class="form-label">Líder</label>
-                                            <select id="selectLiderOcorrencia" class="form-control" required>
-                                                <option value="">-- Selecione o Líder --</option>
-                                            </select>
-                                        </div>
-                                        
-                                        <div class="form-group">
-                                            <label for="dataOcorrencia" class="form-label">Data da Ocorrência</label>
-                                            <input type="date" id="dataOcorrencia" class="form-control" required>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="tipoOcorrencia" class="form-label">Tipo de Ocorrência</label>
-                                            <select id="tipoOcorrencia" class="form-control" required onchange="toggleQuantidadeField()">
-                                                <option value="">-- Selecione o Tipo --</option>
-                                                <option value="reclamacao">Reclamação Pós Venda</option>
-                                                <option value="etiquetaCancelada">Etiqueta Cancelada</option>
-                                                <option value="assertividade">Assertividade da Equipe</option>
-                                                <option value="relacionamento">Relacionamento com Supervisor</option>
-                                                <option value="notaLimpeza">Nota da Organização e Limpeza</option>
-                                                <option value="faltaSemJustificativa">Falta sem Justificativa</option>
-                                                <option value="advertenciaPonto">Advertência por Ponto</option>
-                                                <option value="advertenciaProcedimento">Advertência por Procedimento</option>
-                                                <option value="atestadoMedico">Atestado Médico</option>
-                                            </select>
-                                        </div>
-                                        
-                                        <div class="form-group">
-                                            <label for="quantidadeOcorrencia" class="form-label" id="labelQuantidade">Quantidade</label>
-                                            
-                                            <input type="number" id="quantidadeOcorrencia" class="form-control" value="1" required>
-                                            
-                                            <select id="selectQualidadeRelacionamento" class="form-control" style="display: none;" required disabled>
-                                                <option value="" disabled selected>-- Selecione a Qualidade --</option>
-                                                <option value="bom">Bom</option>
-                                                <option value="mediano">Mediano</option>
-                                                <option value="ruim">Ruim</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="descricaoOcorrencia" class="form-label">Descrição (Opcional)</label>
-                                        <textarea id="descricaoOcorrencia" class="form-control" rows="3" placeholder="Detalhes adicionais sobre a ocorrência..."></textarea>
-                                    </div>
-                                    
-                                    <button type="button" class="btn btn-primary btn-full" onclick="registrarOcorrencia()">
-                                        <i class="fas fa-plus-circle"></i>
-                                        Registrar Ocorrência
-                                    </button>
-                                </div>
-                                
+                                <button type="button" class="btn btn-primary btn-full" style="margin-bottom: 20px;" onclick="abrirModalRegistroOcorrencia()">
+                                    <i class="fas fa-plus-circle"></i>
+                                    Registrar Nova Ocorrência
+                                </button>
                                 <h3 class="indicador-title">
                                     <i class="fas fa-history"></i>
                                     Ocorrências Registradas Hoje
@@ -1247,6 +1194,74 @@
         </div>
     </div>
     
+    <div id="modalRegistroOcorrencia" class="modal" role="dialog" aria-labelledby="modalRegistroOcorrenciaTitle">
+        <div class="modal-content" style="max-width: 600px;">
+            <h2 id="modalRegistroOcorrenciaTitle" class="modal-title">
+                <i class="fas fa-clipboard-list"></i>
+                Registrar Ocorrência
+            </h2>
+            
+            <div id="ocorrenciaForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="selectLiderOcorrencia" class="form-label">Líder</label>
+                        <select id="selectLiderOcorrencia" class="form-control" required>
+                            <option value="">-- Selecione o Líder --</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dataOcorrencia" class="form-label">Data da Ocorrência</label>
+                        <input type="date" id="dataOcorrencia" class="form-control" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tipoOcorrencia" class="form-label">Tipo de Ocorrência</label>
+                        <select id="tipoOcorrencia" class="form-control" required onchange="toggleQuantidadeField()">
+                            <option value="">-- Selecione o Tipo --</option>
+                            <option value="reclamacao">Reclamação Pós Venda</option>
+                            <option value="etiquetaCancelada">Etiqueta Cancelada</option>
+                            <option value="assertividade">Assertividade da Equipe</option>
+                            <option value="relacionamento">Relacionamento com Supervisor</option>
+                            <option value="notaLimpeza">Nota da Organização e Limpeza</option>
+                            <option value="faltaSemJustificativa">Falta sem Justificativa</option>
+                            <option value="advertenciaPonto">Advertência por Ponto</option>
+                            <option value="advertenciaProcedimento">Advertência por Procedimento</option>
+                            <option value="atestadoMedico">Atestado Médico</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="quantidadeOcorrencia" class="form-label" id="labelQuantidade">Quantidade</label>
+                        
+                        <input type="number" id="quantidadeOcorrencia" class="form-control" value="1" required>
+                        
+                        <select id="selectQualidadeRelacionamento" class="form-control" style="display: none;" required disabled>
+                            <option value="" disabled selected>-- Selecione a Qualidade --</option>
+                            <option value="bom">Bom</option>
+                            <option value="mediano">Mediano</option>
+                            <option value="ruim">Ruim</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="descricaoOcorrencia" class="form-label">Descrição (Opcional)</label>
+                    <textarea id="descricaoOcorrencia" class="form-control" rows="3" placeholder="Detalhes adicionais sobre a ocorrência..."></textarea>
+                </div>
+                
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-outline" onclick="fecharModalRegistroOcorrencia()">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="registrarOcorrencia()">
+                        <i class="fas fa-plus-circle"></i>
+                        Registrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="modalConfirmacao" class="modal" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalMessage">
         <div class="modal-content">
             <h2 id="modalTitle" class="modal-title">Confirmação</h2>
@@ -1266,6 +1281,16 @@
         // Variáveis globais
         let chartComparativo = null;
         
+        // CORREÇÃO: Função auxiliar para formatar a data de hoje para YYYY-MM-DD
+        function getDateTodayFormatted() {
+            const today = new Date();
+            // Pega o fuso horário local e formata para 'YYYY-MM-DD'
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
             inicializarSistema();
             carregarLideres();
@@ -1273,9 +1298,10 @@
             carregarOcorrenciasHoje();
             preencherAnosRelatorios();
             
-            const hoje = new Date();
-            document.getElementById('dataOcorrencia').valueAsDate = hoje;
+            // CORREÇÃO APLICADA: Usa a nova função para evitar o bug de timezone
+            document.getElementById('dataOcorrencia').value = getDateTodayFormatted();
             
+            const hoje = new Date();
             const mesAtual = hoje.getMonth() + 1;
             const anoAtual = hoje.getFullYear();
             const anoAtualStr = anoAtual.toString();
@@ -1285,7 +1311,6 @@
             document.getElementById('anoResultado').value = anoAtualStr;
             
             document.getElementById('periodoComparativo').value = 'anual'; 
-            // O ano é preenchido pela preencherAnosRelatorios e já estará como o anoAtual
             
             document.getElementById('filtroPeriodoHistorico').value = 'todos'; 
             document.getElementById('filtroAnoHistorico').value = anoAtualStr;
@@ -1310,6 +1335,25 @@
             document.getElementById('exportDropdown').classList.toggle('active');
         }
         
+        // NOVO: Função para abrir o modal de registro de ocorrência
+        function abrirModalRegistroOcorrencia() {
+            document.getElementById('modalRegistroOcorrencia').style.display = 'flex';
+            // Garante que os selects de líder e tipo estejam preenchidos/resetados
+            carregarLideres();
+            
+            // CORREÇÃO APLICADA: Usa a nova função para evitar o bug de timezone
+            document.getElementById('dataOcorrencia').value = getDateTodayFormatted();
+            
+            document.getElementById('selectLiderOcorrencia').focus();
+            document.getElementById('tipoOcorrencia').value = '';
+            toggleQuantidadeField(); 
+        }
+
+        // NOVO: Função para fechar o modal de registro de ocorrência
+        function fecharModalRegistroOcorrencia() {
+            document.getElementById('modalRegistroOcorrencia').style.display = 'none';
+        }
+
         // NOVO: Função para renderizar a lista de líderes no modal
         function renderizarListaLideres() {
             const listaContainer = document.getElementById('listaLideresModal');
@@ -1516,6 +1560,9 @@
             selects.forEach(selectId => {
                 const select = document.getElementById(selectId);
                 if (select) {
+                    // Salva a opção selecionada para tentar restaurar após o preenchimento
+                    const valorAtual = select.value;
+
                     select.innerHTML = selectId === 'filtroLiderHistorico' 
                         ? '<option value="todos">Todos os Líderes</option>'
                         : '<option value="">-- Selecione o Líder --</option>';
@@ -1526,6 +1573,11 @@
                         option.textContent = lider;
                         select.appendChild(option);
                     });
+
+                    // Tenta restaurar a seleção
+                    if (select.querySelector(`option[value="${valorAtual}"]`)) {
+                        select.value = valorAtual;
+                    }
                 }
             });
         }
@@ -1638,6 +1690,8 @@
             document.getElementById('tipoOcorrencia').value = '';
             toggleQuantidadeField(); // Reseta o campo de quantidade/qualidade
 
+            // NOVO: Fechar o modal após o registro
+            fecharModalRegistroOcorrencia();
             
             carregarOcorrenciasHoje();
             carregarHistorico();
@@ -1650,7 +1704,7 @@
             const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias'));
             const listaOcorrenciasHoje = document.getElementById('listaOcorrenciasHoje');
             
-            const hoje = new Date().toISOString().split('T')[0];
+            const hoje = getDateTodayFormatted(); // Usa a data formatada corretamente
             const ocorrenciasHoje = ocorrencias.filter(oc => oc.data === hoje);
             
             listaOcorrenciasHoje.innerHTML = '';
