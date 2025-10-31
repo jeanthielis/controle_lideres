@@ -982,7 +982,6 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="logo-container">
                 <div class="logo">
@@ -1014,11 +1013,21 @@
             </nav>
         </aside>
         
-        <!-- Main Content Area -->
         <main class="main-content">
             <header class="header">
                 <h1 class="header-title" id="current-tab-title">Ocorrências</h1>
                 <div class="header-actions">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('importarBackupInput').click()">
+                        <i class="fas fa-upload"></i> Restaurar
+                    </button>
+                    <input 
+                        type="file" 
+                        id="importarBackupInput" 
+                        accept=".json" 
+                        style="display: none;" 
+                        onchange="carregarBackup(event)"
+                    >
+                    
                     <button type="button" class="btn btn-outline btn-sm" onclick="fazerBackup()">
                         <i class="fas fa-download"></i> Backup
                     </button>
@@ -1026,7 +1035,6 @@
             </header>
             
             <div class="content-area">
-                <!-- Aba Ocorrências -->
                 <div id="ocorrencias" class="tab-content active">
                     <div class="dashboard-grid">
                         <div class="card full-width">
@@ -1048,14 +1056,12 @@
                                 </h3>
                                 
                                 <div id="listaOcorrenciasHoje" class="list">
-                                    <!-- Conteúdo carregado via JavaScript -->
-                                </div>
+                                    </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Aba Resultado -->
                 <div id="resultado" class="tab-content">
                     <div class="dashboard-grid">
                         <div class="card full-width">
@@ -1101,8 +1107,7 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <!-- Espaço reservado para alinhamento -->
-                                    </div>
+                                        </div>
                                 </div>
                                 
                                 <div id="resultadoContainer" style="display: none;">
@@ -1146,7 +1151,6 @@
                     </div>
                 </div>
                 
-                <!-- Aba Comparativo -->
                 <div id="comparativo" class="tab-content">
                     <div class="dashboard-grid">
                         <div class="card full-width">
@@ -1236,8 +1240,7 @@
                                         Ranking de Líderes
                                     </h3>
                                     <div class="leaders-grid" id="rankingLideres">
-                                        <!-- Conteúdo carregado via JavaScript -->
-                                    </div>
+                                        </div>
                                     
                                     <h3 class="section-title">
                                         <i class="fas fa-chart-pie"></i>
@@ -1252,7 +1255,6 @@
                     </div>
                 </div>
                 
-                <!-- Aba Histórico -->
                 <div id="historico" class="tab-content">
                     <div class="dashboard-grid">
                         <div class="card full-width">
@@ -1272,25 +1274,41 @@
                                     </div>
                                     
                                     <div class="form-group">
-                                        <label for="periodoHistorico" class="form-label">Período</label>
+                                        <label for="periodoHistorico" class="form-label">Período de Análise</label>
                                         <select id="periodoHistorico" class="form-control" onchange="carregarHistoricoLider()">
-                                            <option value="7">Últimos 7 dias</option>
-                                            <option value="15">Últimos 15 dias</option>
-                                            <option value="30">Últimos 30 dias</option>
-                                            <option value="90">Últimos 90 dias</option>
-                                            <option value="todos">Todo o histórico</option>
+                                            <option value="1">Janeiro</option>
+                                            <option value="2">Fevereiro</option>
+                                            <option value="3">Março</option>
+                                            <option value="4">Abril</option>
+                                            <option value="5">Maio</option>
+                                            <option value="6">Junho</option>
+                                            <option value="7">Julho</option>
+                                            <option value="8">Agosto</option>
+                                            <option value="9">Setembro</option>
+                                            <option value="10">Outubro</option>
+                                            <option value="11">Novembro</option>
+                                            <option value="12">Dezembro</option>
+                                            <option value="anual">Anual</option>
                                         </select>
                                     </div>
                                 </div>
                                 
+                                <div class="form-row">
+                                    <div class="form-group" id="anoHistoricoGroup">
+                                        <label for="anoHistorico" class="form-label">Ano</label>
+                                        <select id="anoHistorico" class="form-control" onchange="carregarHistoricoLider()">
+                                            </select>
+                                    </div>
+                                    <div class="form-group">
+                                        </div>
+                                </div>
                                 <div id="historicoContainer" style="display: none;">
                                     <h3 class="section-title">
                                         <i class="fas fa-list"></i>
                                         Ocorrências Registradas
                                     </h3>
                                     <div id="listaHistoricoOcorrencias" class="list">
-                                        <!-- Conteúdo carregado via JavaScript -->
-                                    </div>
+                                        </div>
                                 </div>
                                 
                                 <div id="semDadosHistorico" class="empty-state">
@@ -1301,16 +1319,14 @@
                         </div>
                     </div>
                 </div>
-            </div>
+                </div>
         </main>
     </div>
 
-    <!-- Botão fixo para adicionar líder -->
     <button class="fixed-add-button" onclick="abrirModalCadastroLider()">
         <i class="fas fa-user-plus"></i>
     </button>
 
-    <!-- Modal para Cadastro de Líder -->
     <div id="modalCadastroLider" class="modal">
         <div class="modal-content">
             <h2 class="modal-title">
@@ -1335,12 +1351,10 @@
             </h3>
             
             <div id="listaLideresModal" class="lideres-list">
-                <!-- Lista de líderes será carregada aqui -->
-            </div>
+                </div>
         </div>
     </div>
 
-    <!-- Modal para Registro de Ocorrência -->
     <div id="modalRegistroOcorrencia" class="modal">
         <div class="modal-content">
             <h2 class="modal-title">
@@ -1404,7 +1418,6 @@
         </div>
     </div>
 
-    <!-- Modal de Confirmação -->
     <div id="modalConfirmacao" class="modal">
         <div class="modal-content">
             <h2 class="modal-title" id="modalConfirmacaoTitulo">
@@ -1419,7 +1432,6 @@
         </div>
     </div>
 
-    <!-- Toast Notification -->
     <div id="toastNotification"></div>
 
     <script>
@@ -1506,7 +1518,7 @@
                     } else if (tabId === 'resultado') {
                         // Inicializar a aba de resultado se necessário
                     } else if (tabId === 'historico') {
-                        // Inicializar a aba de histórico se necessário
+                        carregarHistoricoLider(); // Carregar histórico ao trocar para a aba
                     }
                 });
             });
@@ -1519,6 +1531,7 @@
             
             const anoResultadoSelect = document.getElementById('anoResultado');
             const anoComparativoSelect = document.getElementById('anoComparativo');
+            const anoHistoricoSelect = document.getElementById('anoHistorico'); // ADICIONADO
             
             anos.forEach(ano => {
                 const option1 = document.createElement('option');
@@ -1530,11 +1543,17 @@
                 option2.value = ano;
                 option2.textContent = ano;
                 anoComparativoSelect.appendChild(option2);
+
+                const option3 = document.createElement('option'); // ADICIONADO
+                option3.value = ano; // ADICIONADO
+                option3.textContent = ano; // ADICIONADO
+                anoHistoricoSelect.appendChild(option3); // ADICIONADO
             });
             
             // Definir ano atual como padrão
             anoResultadoSelect.value = anoAtual;
             anoComparativoSelect.value = anoAtual;
+            anoHistoricoSelect.value = anoAtual; // ADICIONADO
         }
 
         // Carregar líderes nos selects
@@ -1899,6 +1918,10 @@
                     ocorrencias = ocorrencias.filter(o => o.id !== id);
                     localStorage.setItem('ocorrencias', JSON.stringify(ocorrencias));
                     carregarOcorrenciasHoje();
+                    // Se estiver na aba histórico, recarrega
+                    if (document.getElementById('historico').classList.contains('active')) {
+                        carregarHistoricoLider();
+                    }
                     mostrarToast('Ocorrência excluída com sucesso!');
                 }
             );
@@ -2268,28 +2291,17 @@
         // Carregar histórico do líder
         function carregarHistoricoLider() {
             const liderId = parseInt(document.getElementById('selectLiderHistorico').value);
-            const periodo = document.getElementById('periodoHistorico').value;
+            const periodo = document.getElementById('periodoHistorico').value; // Agora é '1'-'12' ou 'anual'
+            const ano = parseInt(document.getElementById('anoHistorico').value); // Pega o ano selecionado
             
             if (!liderId) {
                 document.getElementById('historicoContainer').style.display = 'none';
                 document.getElementById('semDadosHistorico').style.display = 'block';
                 return;
             }
-            
-            const lider = lideres.find(l => l.id === liderId);
-            let ocorrenciasLider = ocorrencias.filter(o => o.liderId === liderId);
-            
-            // Filtrar por período
-            if (periodo !== 'todos') {
-                const dias = parseInt(periodo);
-                const dataLimite = new Date();
-                dataLimite.setDate(dataLimite.getDate() - dias);
-                
-                ocorrenciasLider = ocorrenciasLider.filter(o => {
-                    const dataOcorrencia = new Date(o.data);
-                    return dataOcorrencia >= dataLimite;
-                });
-            }
+
+            // A lógica de filtro foi substituída por esta chamada de função:
+            let ocorrenciasLider = filtrarOcorrenciasPorPeriodo(liderId, periodo, ano);
             
             // Ordenar por data (mais recente primeiro)
             ocorrenciasLider.sort((a, b) => new Date(b.data) - new Date(a.data));
@@ -2600,7 +2612,108 @@
             
             mostrarToast('Backup realizado com sucesso!');
         }
+        
+        /**
+         * Acionado pelo input de arquivo (onchange) para ler o arquivo selecionado.
+         */
+        function carregarBackup(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                return; // Usuário cancelou
+            }
 
+            // Validação simples do tipo de arquivo
+            if (file.type !== 'application/json') {
+                mostrarToast('Por favor, selecione um arquivo .json válido.', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+
+            // Callback para quando o arquivo for lido
+            reader.onload = function(e) {
+                const fileContent = e.target.result;
+                processarArquivoBackup(fileContent);
+            };
+
+            reader.onerror = function() {
+                mostrarToast('Erro ao ler o arquivo.', 'error');
+            };
+
+            // Inicia a leitura do arquivo como texto
+            reader.readAsText(file);
+
+            // Limpa o valor do input para permitir carregar o mesmo arquivo novamente
+            event.target.value = null;
+        }
+
+        /**
+         * Processa o conteúdo JSON, valida, pede confirmação e restaura os dados.
+         */
+        function processarArquivoBackup(jsonContent) {
+            let dadosImportados;
+
+            // 1. Tentar fazer o parse do JSON
+            try {
+                dadosImportados = JSON.parse(jsonContent);
+
+                // 2. Validar a estrutura do arquivo
+                if (!dadosImportados || typeof dadosImportados !== 'object' || 
+                    !Array.isArray(dadosImportados.lideres) || 
+                    !Array.isArray(dadosImportados.ocorrencias)) {
+                    
+                    throw new Error('Formato de arquivo inválido.');
+                }
+
+            } catch (error) {
+                mostrarToast('Arquivo de backup inválido ou corrompido.', 'error');
+                console.error('Erro ao processar backup:', error);
+                return;
+            }
+
+            // 3. Pedir confirmação ao usuário (AÇÃO DESTRUTIVA)
+            // Usamos o seu modal de confirmação já existente
+            mostrarModalConfirmacao(
+                'Restaurar Backup',
+                'Tem certeza que deseja restaurar este backup? TODOS os dados atuais serão substituídos pelos dados do arquivo. Esta ação não pode ser desfeita.',
+                function() {
+                    // 4. Se confirmado, aplicar os dados
+                    try {
+                        // Atualiza as variáveis globais
+                        lideres = dadosImportados.lideres;
+                        ocorrencias = dadosImportados.ocorrencias;
+
+                        // Salva no localStorage (sobrescrevendo o antigo)
+                        localStorage.setItem('lideres', JSON.stringify(lideres));
+                        localStorage.setItem('ocorrencias', JSON.stringify(ocorrencias));
+
+                        // 5. Atualizar toda a interface
+                        // (Essencial para que a aplicação reflita os novos dados)
+                        
+                        carregarLideresSelects(); // Atualiza todos os <select>
+                        renderizarListaLideres(); // Atualiza a lista no modal de cadastro
+                        carregarOcorrenciasHoje(); // Atualiza a lista na aba principal
+                        
+                        // Limpa os campos de resultado e histórico
+                        document.getElementById('selectLiderResultado').value = '';
+                        document.getElementById('selectLiderHistorico').value = '';
+                        calcularResultadoLider(); // Esconde o container de resultado
+                        carregarHistoricoLider(); // Esconde o container de histórico
+                        
+                        // Atualiza o comparativo
+                        gerarComparativoLideres();
+
+                        // 6. Mostrar feedback de sucesso
+                        mostrarToast('Backup restaurado com sucesso!', 'success');
+
+                    } catch (e) {
+                        mostrarToast('Ocorreu um erro ao salvar os dados restaurados.', 'error');
+                        console.error('Erro ao restaurar dados:', e);
+                    }
+                }
+            );
+        }
+        
         // ===== FUNÇÕES AUXILIARES =====
 
         // Filtrar ocorrências por período
@@ -2628,7 +2741,8 @@
         // Formatar data
         function formatarData(data) {
             const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-            return new Date(data).toLocaleDateString('pt-BR', options);
+            // Adiciona timeZone: 'UTC' para evitar problemas de fuso ao formatar a data que foi salva como YYYY-MM-DD
+            return new Date(data).toLocaleDateString('pt-BR', { timeZone: 'UTC', ...options });
         }
 
         // Formatar hora
